@@ -1,26 +1,21 @@
-#' Bayesian Quantile Regression for Ordinal Models
+#' Bayesian quantile regression for ordinal models
 #'
 #' @description
-#' This package serves the following 3 purposes for Ordinal
-#' Models under bayesian analysis:
-#' \itemize{
-#' \item{Package provides an estimation technique for
-#' Bayesian quantile regression in ordinal models. Two algorithms are considered}
-#' \itemize{
-#' \item{one for an ordinal
-#' model with three outcomes.}
-#' \item{second for an ordinal
-#' model with more than three outcomes.}
-#' }
-#' \item{Package provides model
-#' performance criteria's.}
-#' \item{It also provides trace plots for Markov chain Monte Carlo (MCMC) draws.}
-#' }
+#'
+#' Provides functions for estimating Bayesian quantile regression
+#' for ordinal models, calculating covariate effects, and computing measures for
+#' model comparison. Specifically, the package offers two estimation functions -
+#' one for an ordinal model with more than three outcomes. For each ordinal model,
+#' the package provides functions to calculate the covariate effect using the MCMC
+#' outputs. The package also computes marginal likelihood (recommended) and the
+#' Deviance Information Criterion (DIC) for comparing alternative quantile regression
+#' models. Besides, the package also contains functions for making trace plots of MCMC draws
+#' and other functions that aids the estimation or inference of quantile ordinal models.
 #'
 #' @details
 #' \deqn{Package: bqror}
 #' \deqn{Type: Package}
-#' \deqn{Version: 0.1.4}
+#' \deqn{Version: 1.3.1}
 #' \deqn{License: GPL (>=2)}
 #'
 #' Package \strong{bqror} provides the following functions:
@@ -28,48 +23,52 @@
 #' \itemize{
 #' \item{For an Ordinal Model with three outcomes:}
 #' }
-#' \code{\link[bqror]{quan_reg3}}, \code{\link[bqror]{drawlatent3}},
-#' \code{\link[bqror]{drawbeta3}}, \code{\link[bqror]{drawsigma3}},
-#' \code{\link[bqror]{drawnu3}}, \code{\link[bqror]{deviance3}},
-#' \code{\link[bqror]{negLoglikelihood}}, \code{\link[bqror]{rndald}},
-#' \code{\link[bqror]{trace_plot3}}, \code{\link[bqror]{inefficiency_factor3}}
+#' \code{\link[bqror]{quantregOR2}}, \code{\link[bqror]{drawlatentOR2}},
+#' \code{\link[bqror]{drawbetaOR2}}, \code{\link[bqror]{drawsigmaOR2}},
+#' \code{\link[bqror]{drawnuOR2}}, \code{\link[bqror]{devianceOR2}},
+#' \code{\link[bqror]{qrnegLogLikeOR2}}, \code{\link[bqror]{rndald}},
+#' \code{\link[bqror]{infactorOR2}},
+#' \code{\link[bqror]{covEffectOR2}},\code{\link[bqror]{logMargLikelihoodOR2}}
 #'
 #' \itemize{
 #' \item{For an Ordinal Model with more than three outcomes:}
 #' }
-#' \code{\link[bqror]{quan_regg3}}, \code{\link[bqror]{qrminfundtheorem}},
-#' \code{\link[bqror]{qrnegloglikensum}}, \code{\link[bqror]{drawbetag3}},
-#' \code{\link[bqror]{drawwg3}}, \code{\link[bqror]{drawlatentg3}},
-#' \code{\link[bqror]{drawdeltag3}}, \code{\link[bqror]{devianceg3}},
-#' \code{\link[bqror]{alcdfstdg3}}, \code{\link[bqror]{alcdf}},
-#' \code{\link[bqror]{trace_plotg3}}, \code{\link[bqror]{inefficiency_factorg3}}
+#' \code{\link[bqror]{quantregOR1}}, \code{\link[bqror]{qrminfundtheorem}},
+#' \code{\link[bqror]{qrnegLogLikensumOR1}}, \code{\link[bqror]{drawbetaOR1}},
+#' \code{\link[bqror]{drawwOR1}}, \code{\link[bqror]{drawlatentOR1}},
+#' \code{\link[bqror]{drawdeltaOR1}}, \code{\link[bqror]{devianceOR1}},
+#' \code{\link[bqror]{alcdfstd}}, \code{\link[bqror]{alcdf}},
+#' \code{\link[bqror]{infactorOR1}},
+#' \code{\link[bqror]{covEffectOR1}}, \code{\link[bqror]{logMargLikelihoodOR1}}
 #'
 #'
 #' @author
-#' Dr. Mohammad Arshad Rahman
+#' Mohammad Arshad Rahman
 #'
 #' Prajual Maheshwari <prajual1391@gmail.com>
 #'
 #' @references
 #' Rahman, M. A. (2016). “Bayesian
 #' Quantile Regression for Ordinal Models.”
-#' Bayesian Analysis, 11(1): 1-24, <doi:10.1214/15-BA939>.
+#' Bayesian Analysis, 11(1): 1-24. DOI: 10.1214/15-BA939
 #'
-#' Spiegelhalter, D. J., Best, N. G., Carlin B. P. and Linde A. (2002).
-#' “Bayesian Measures of Model Complexity and Fit.” Journal of the
-#' Royal Statistical Society B, Part 4: 583-639,  <doi:10.1111/1467-9868.00353>.
+#' Yu, K., and Moyeed, R. A. (2001). “Bayesian Quantile Regression.” Statistics and
+#' Probability Letters, 54(4): 437–447. DOI: 10.1016/S0167-7152(01)00124-9
+#'
+#' Koenker, R., and Bassett, G. (1978).“Regression Quantiles.” Econometrica,
+#' 46(1): 33-50. DOI: 10.2307/1913643
 #'
 #' Greenberg, E. (2012). “Introduction to Bayesian Econometrics.”
-#' Cambridge University Press, Cambridge, <doi:10.1017/CBO9781139058414>.
+#' Cambridge University Press. Cambridge, DOI: 10.1017/CBO9781139058414
 #'
 #' @seealso \link[GIGrvg]{rgig}, \link[MASS]{mvrnorm}, \link[MASS]{ginv},
 #' \link[truncnorm]{rtruncnorm}, \link[NPflow]{mvnpdf},
 #' \link[invgamma]{rinvgamma}, \link[pracma]{mldivide},
 #' \link[pracma]{rand}, \link[stats]{qnorm},
 #' \link[stats]{rexp}, \link[stats]{rnorm},
-#' \link[pracma]{std}, \link[stats]{sd},
-#' \link[pracma]{Reshape}, \link[tcltk]{setTkProgressBar},
-#' \link[tcltk]{tkProgressBar}.
+#' \link[pracma]{std}, \link[stats]{sd}, \link[stats]{acf},
+#' \link[pracma]{Reshape}, \link[progress]{progress_bar},
+#' \link[invgamma]{dinvgamma}
 #'
 #' @docType package
 #' @name bqror

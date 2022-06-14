@@ -3,8 +3,8 @@
 \docType{data}
 \name{data25j3}
 \alias{data25j3}
-\title{data25j3
-Data with 300 observations for \eqn{p = 0.25} with 3 outcomes}
+\title{Data containing 500 observations generated from the quantile
+ordinal model with 3 outcomes and \eqn{p = 0.25} (i.e., 25th quantile)}
 \usage{
 data(data25j3)
 }
@@ -16,24 +16,25 @@ Returns a list with components
 }
 }
 \description{
-data25j3
-Data with 300 observations for \eqn{p = 0.25} with 3 outcomes
+Data containing 500 observations generated from the quantile
+ordinal model with 3 outcomes and \eqn{p = 0.25} (i.e., 25th quantile)
 }
 \details{
-Generates 300 observations for the simulation study at the \eqn{25^{th}}
-quantile. The specifications are
-\eqn{\beta = (2, 2, 6)}, \eqn{X} ~ \eqn{MVN(0_{2}, \Sigma)} where
-\eqn{\Sigma = [1, 0.25; 0.25, 1]}, and \eqn{\epsilon} ~ AL(\eqn{0, \sigma = 1, p = 0.25}).
+This data contains 500 observations generated from the quantile
+ordinal model with 3 outcomes at the 25th quantile (i.e., \eqn{p = 0.25}).
+The model specifications for generating the data are as follows: \eqn{\beta = (-4, 6, 5)}, $X ~ Unif(0, 1)$, and
+\eqn{\epsilon} ~ AL(\eqn{0, \sigma = 1, p = 0.25}).
 
-The errors are generated from an asymmetric Laplace distribution
-by using its normal–exponential mixture formulation.
-
-The continuous value are classified into 3 categories using the
-cut-points (0, 3).
+The errors are generated from the asymmetric Laplace distribution
+using the normal exponential mixture formulation. The cut-points \eqn{(0, 3)}
+are used to categorize the continuous values into 3 ordinal outcomes.
 }
 \references{
-Kozumi, H. and Kobayashi, G. (2011). “Gibbs Sampling Methods for Bayesian Quantile Regression.”
- Journal of Statistical Computation and Simulation, 81(11), 1565–1578.
+Kozumi, H., and Kobayashi, G. (2011). “Gibbs Sampling Methods for Bayesian Quantile Regression.”
+ Journal of Statistical Computation and Simulation, 81(11), 1565–1578. DOI: 10.1080/00949655.2010.496117
+
+Yu, K., and Zhang, J. (2005). “A Three-Parameter Asymmetric
+Laplace Distribution.” Communications in Statistics - Theory and Methods, 34(9-10), 1867-1879. DOI: 10.1080/03610920500199018
 }
 \seealso{
 \link[MASS]{mvrnorm}, Asymmetric Laplace Distribution

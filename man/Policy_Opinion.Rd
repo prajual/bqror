@@ -3,45 +3,50 @@
 \docType{data}
 \name{Policy_Opinion}
 \alias{Policy_Opinion}
-\title{Policy_Opinion
-The data-set is based on the survey conducted by American National Election Studies (ANES) in 2010-2012.
-This data talks about the public opinion on the pro-growth tax policy, considered to raise the federal
-income taxes for couples (individuals) earning more than $250,000 ($200,000) per year.}
+\title{The data consists of public opinion on raising federal income taxes on
+the rich and a host of other variables for 1,164 individuals and is taken from
+the 2010-2012 American National Election Studies (ANES) on the Evaluation of
+Government and Society Study I (EGSS 1)}
 \usage{
 data(Policy_Opinion)
 }
 \value{
 Returns data with components
 \itemize{
-\item{\code{Intercept}: }{A column of ones.}
-\item{\code{AgeCat}: }{Indicator for Age Category.}
+\item{\code{Intercept}: }{column of ones.}
+\item{\code{AgeCat}: }{Indicator for age Category.}
 \item{\code{IncomeCat}: }{Indicator for household income > $75,000.}
 \item{\code{Bachelors}: }{Individual's highest degree in Bachelors.}
-\item{\code{Post.Bachelors}: }{Highest degree in Masters, Professional or Doctorate.}
-\item{\code{numComputers}: }{Individual or household owns a computer.}
-\item{\code{CellPhone}: }{Individual or household owns a cell phone.}
-\item{\code{White}: }{Race of the individual is white.}
-\item{\code{y}: }{a matrix of ordinal outcomes.}
+\item{\code{Post.Bachelors}: }{Indicator for highest degree in Masters, Professional or Doctorate.}
+\item{\code{numComputers}: }{Indicator for computer ownership by individual or household.}
+\item{\code{CellPhone}: }{Indicator for cellphone ownership by individual or household.}
+\item{\code{White}: }{Indicator for white race.}
+\item{\code{y}: }{matrix of ordinal outcomes.}
 }
 }
 \description{
-Policy_Opinion
-The data-set is based on the survey conducted by American National Election Studies (ANES) in 2010-2012.
-This data talks about the public opinion on the pro-growth tax policy, considered to raise the federal
-income taxes for couples (individuals) earning more than $250,000 ($200,000) per year.
+The data consists of public opinion on raising federal income taxes on
+the rich and a host of other variables for 1,164 individuals and is taken from
+the 2010-2012 American National Election Studies (ANES) on the Evaluation of
+Government and Society Study I (EGSS 1)
 }
 \details{
-The ANES data-set here provides 1,164 observations. The responses from individuals were
-recorded as either \emph{oppose, neither favor nor oppose} or \emph{favor} the tax increase.
-The sample has 263 (22.59\%), 261 (22.42\%) and 640 (54.98\%) observations in respective categories.
+The data consists of 1,164 observations taken from the 2010-2012 American National Election
+Studies (ANES) on the Evaluations of Government and Society Study 1 (EGSS 1). The objective
+is to analyze public opinion on the proposal to raise federal income taxes for couples (individuals)
+earning more than $250,000 ($200,000) per year. The responses were recorded as oppose, neither
+favor nor oppose, or favor the tax increase and forms the dependent variable in the study. The
+independent variables include indicator variables (or dummy) for employment, income above
+$75,000, bachelor's and post-bachelor's degree, computer ownership, cellphone ownership, and white race.
 }
 \references{
 Rahman, M. A. (2016). “Bayesian
 Quantile Regression for Ordinal Models.”
-Bayesian Analysis, 11(1): 1-24.
+Bayesian Analysis, 11(1): 1-24. DOI: 10.1214/15-BA939
 
 Jeliazkov, I., Graves, J., and Kutzbach, M. (2008). “Fitting and Comparison of Models
-for Multivariate Ordinal Outcomes.” Advances in Econometrics: Bayesian Econometrics, 23: 115–156.
+for Multivariate Ordinal Outcomes.” Advances in Econometrics: Bayesian Econometrics,
+23: 115–156. DOI: 10.1016/S0731-9053(08)23004-5
 }
 \seealso{
 \href{https://electionstudies.org/data-center/}{ANES},  \href{https://georgewbush-whitehouse.archives.gov/cea/progrowth.html}{Tax Policy}
