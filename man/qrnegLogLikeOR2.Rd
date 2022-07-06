@@ -2,45 +2,44 @@
 % Please edit documentation in R/ORII.R
 \name{qrnegLogLikeOR2}
 \alias{qrnegLogLikeOR2}
-\title{Negative log-likelihood for ordinal quantile model with 3 outcomes}
+\title{Negative sum of log-likelihood for OR2 model}
 \usage{
-qrnegLogLikeOR2(y, x, gammacp, beta, sigma, p)
+qrnegLogLikeOR2(y, x, gammaCp, betaOne, sigmaOne, p)
 }
 \arguments{
-\item{y}{observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.}
+\item{y}{observed ordinal outcomes, column vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{gammacp}{row vector of cutpoints including -Inf and Inf.}
+\item{gammaCp}{row vector of cutpoints including (-Inf, Inf).}
 
-\item{beta}{column vector of coefficients of dimension \eqn{(k x 1)}.}
+\item{betaOne}{a sample draw of \eqn{\beta} of size \eqn{(k x 1)}.}
 
-\item{sigma}{scale factor, a scalar.}
+\item{sigmaOne}{a sample draw of \eqn{\sigma}, a scalar value.}
 
 \item{p}{quantile level or skewness parameter, p in (0,1).}
 }
 \value{
-Returns the negative log-likelihood value.
+Returns the negative sum of log-likelihood.
 }
 \description{
-This function computes the negative of the log-likelihood for ordinal quantile
-model with 3 outcomes.
+This function computes the negative sum of log-likelihood for OR2 model (ordinal quantile
+model with exactly 3 outcomes).
 }
 \details{
-Computes the negative of the log-likelihood for
-ordinal quantile model with 3 outcomes where the error is assumed to follow
-an asymmetric Laplace distribution.
+This function computes the negative sum of log-likelihood for OR2 model where the error is assumed to follow
+an AL distribution.
 }
 \examples{
 set.seed(101)
 data("data25j3")
-x <- data25j3$x
 y <- data25j3$y
+xMat <- data25j3$x
 p <- 0.25
-gammacp <- c(-Inf, 0, 3, Inf)
-beta <- c(1.810504, 1.850332, 6.18116)
-sigma <- 0.9684741
-output <- qrnegLogLikeOR2(y, x, gammacp, beta, sigma, p)
+gammaCp <- c(-Inf, 0, 3, Inf)
+betaOne <- c(1.810504, 1.850332, 6.18116)
+sigmaOne <- 0.9684741
+output <- qrnegLogLikeOR2(y, xMat, gammaCp, betaOne, sigmaOne, p)
 
 # output
 #   902.4045

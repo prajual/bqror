@@ -2,36 +2,31 @@
 % Please edit documentation in R/ORII.R
 \name{devianceOR2}
 \alias{devianceOR2}
-\title{Deviance Information Criteria for ordinal quantile model
-with 3 outcomes}
+\title{Deviance Information Criterion for OR2 model}
 \usage{
-devianceOR2(y, x, gammacp, p, postMeanbeta, postStdbeta,
-postMeansigma, postStdsigma, beta, sigma, burn, nsim)
+devianceOR2(y, x, betadraws, sigmadraws, gammaCp, postMeanbeta,
+postMeansigma, burn, mcmc, p)
 }
 \arguments{
-\item{y}{observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.}
+\item{y}{observed ordinal outcomes, column vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{gammacp}{row vector of cut-points including -Inf and Inf.}
+\item{betadraws}{MCMC draws of \eqn{\beta}, size is \eqn{(k x nsim)}.}
 
-\item{p}{quantile level or skewness parameter, p in (0,1).}
+\item{sigmadraws}{MCMC draws of \eqn{\sigma}, size is \eqn{(nsim x 1)}.}
+
+\item{gammaCp}{row vector of cut-points including -Inf and Inf.}
 
 \item{postMeanbeta}{mean value of \eqn{\beta} obtained from MCMC draws.}
 
-\item{postStdbeta}{standard deviation of \eqn{\beta} obtained from MCMC draws.}
-
 \item{postMeansigma}{mean value of \eqn{\sigma} obtained from MCMC draws.}
 
-\item{postStdsigma}{standard deviation of \eqn{\sigma} obtained from MCMC draws.}
+\item{burn}{number of burn-in MCMC iterations.}
 
-\item{beta}{MCMC draw of coefficients, dimension is \eqn{(k x nsim)}.}
+\item{mcmc}{number of MCMC iterations, post burn-in.}
 
-\item{sigma}{MCMC draw of scale factor, dimension is \eqn{(nsim x 1)}.}
-
-\item{burn}{number of discarded MCMC iterations.}
-
-\item{nsim}{total number of MCMC iterations including the burn-in.}
+\item{p}{quantile level or skewness parameter, p in (0,1).}
 }
 \value{
 Returns a list with components
@@ -40,34 +35,39 @@ Returns a list with components
 \deqn{devpostmean = -2*(logLikelihood)}.
 }
 \description{
-Function for computing the Deviance information criteria for ordinal quantile
-model with 3 outcomes.
+Function for computing the DIC for OR2 model (ordinal quantile
+model with exactly 3 outcomes).
 }
 \details{
 Deviance is -2*(log likelihood) and has an important role in
 statistical model comparison because of its relation with Kullback-Leibler
-information criteria.
+information criterion.
+
+This function provides the DIC, which can be used to compare two or more models at the
+same quantile. The model with a lower DIC provides a better fit.
 }
 \examples{
 set.seed(101)
 data("data25j3")
-x <- data25j3$x
 y <- data25j3$y
-k <- dim(x)[2]
-output <- quantregOR2(y = y, x = x, b0 = 0, B0 = 10*diag(k), n0 = 5, d0 = 8, gamma = 3,
-mcmc = 50, p = 0.25, verbose = FALSE)
-gammacp <- c(-Inf, 0, 3, Inf)
+xMat <- data25j3$x
+k <- dim(xMat)[2]
+b0 <- array(rep(0, k), dim = c(k, 1))
+B0 <- 10*diag(k)
+n0 <- 5
+d0 <- 8
+output <- quantregOR2(y = y, x = xMat, b0, B0, n0, d0, gamma2 = 3,
+burn = 10, mcmc = 40, p = 0.25, verbose = FALSE)
+betadraws <- output$betadraws
+sigmadraws <- output$sigmadraws
+gammaCp <- c(-Inf, 0, 3, Inf)
 postMeanbeta <- output$postMeanbeta
-postStdbeta <- output$postStdbeta
 postMeansigma <- output$postMeansigma
-postStdsigma <- output$postStdsigma
-beta <- output$beta
-sigma <- output$sigma
-mcmc = 50
+mcmc = 40
 burn <- 10
 nsim <- burn + mcmc
-deviance <- devianceOR2(y, x, gammacp, p = 0.25, postMeanbeta, postStdbeta,
-postMeansigma, postStdsigma, beta, sigma, burn, nsim)
+deviance <- devianceOR2(y, xMat, betadraws, sigmadraws, gammaCp,
+postMeanbeta, postMeansigma, burn, mcmc, p = 0.25)
 
 # DIC
 #   801.8191

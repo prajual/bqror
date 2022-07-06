@@ -2,56 +2,63 @@
 % Please edit documentation in R/ORI.R
 \name{infactorOR1}
 \alias{infactorOR1}
-\title{Inefficiency factor for ordinal quantile model
-with more than 3 outcomes}
+\title{Inefficiency factor for OR1 model}
 \usage{
-infactorOR1(x, beta, delta, autocorrelationCutoff)
+infactorOR1(x, betadraws, deltadraws, autocorrelationCutoff, verbose)
 }
 \arguments{
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
+This input is used to extract column names, if available, and not used in calculation.}
 
-\item{beta}{Gibbs draw of coefficients of dimension \eqn{(k x nsim)}.}
+\item{betadraws}{MCMC draws of \eqn{\beta} of size \eqn{(k x nsim)}.}
 
-\item{delta}{Gibbs draw of cut-points.}
+\item{deltadraws}{MCMC draws of \eqn{\delta} of size \eqn{((J-2) x nsim)}.}
 
-\item{autocorrelationCutoff}{cut-off to identify the number of lags, default is 0.05.}
+\item{autocorrelationCutoff}{cut-off to identify the number of lags and form batches, default is 0.05.}
+
+\item{verbose}{whether to print the final output and provide additional information or not, default is TRUE.}
 }
 \value{
 Returns a list with components
 \itemize{
-\item{\code{inefficiencyDelta}: }{vector with inefficiency factor for each \eqn{\delta}.}
-\item{\code{inefficiencyBeta}: }{vector with inefficiency factor for each \eqn{\beta}.}
+\item{\code{inefficiencyDelta}: }{It is a vector with inefficiency factor for each \eqn{\delta}.}
+\item{\code{inefficiencyBeta}: }{It is a vector with inefficiency factor for each \eqn{\beta}.}
 }
 }
 \description{
 This function calculates the inefficiency factor from the MCMC draws
-of \eqn{(\beta, \delta)} for ordinal quantile model with more than 3 outcomes. The
+of \eqn{(\beta, \delta)} for OR1 model (ordinal quantile model with 3 or more outcomes). The
 inefficiency factor is calculated using the batch-means method.
 }
 \details{
 Calculates the inefficiency factor of \eqn{(\beta, \delta)} using the batch-means
-method.
+method based on MCMC draws. Inefficiency factor can be interpreted as the cost of
+working with correlated draws. A low inefficiency factor indicates better mixing
+and efficient algorithm.
 }
 \examples{
 set.seed(101)
 data("data25j4")
-x <- data25j4$x
 y <- data25j4$y
-k <- dim(x)[2]
+xMat <- data25j4$x
+k <- dim(xMat)[2]
 J <- dim(as.array(unique(y)))[1]
+b0 <- array(rep(0, k), dim = c(k, 1))
+B0 <- 10*diag(k)
+d0 <- array(0, dim = c(J-2, 1))
 D0 <- 0.25*diag(J - 2)
-output <- quantregOR1(y = y, x = x, b0 = 0, B0 = 10*diag(k), d0 = 0, D0 = D0,
-mcmc = 40, p = 0.25, tune = 1, verbose = FALSE)
-beta <- output$beta
-delta <- output$delta
-inefficiency <- infactorOR1(x, beta, delta, 0.5)
+output <- quantregOR1(y = y, x = xMat, b0, B0, d0, D0,
+burn = 10, mcmc = 40, p = 0.25, tune = 1, verbose = FALSE)
+betadraws <- output$betadraws
+deltadraws <- output$deltadraws
+inefficiency <- infactorOR1(xMat, betadraws, deltadraws, 0.5, TRUE)
 
 # Summary of Inefficiency Factor:
 
 #             Inefficiency
-# beta_0        1.1008
-# beta_1        3.0024
-# beta_2        2.8543
+# beta_1        1.1008
+# beta_2        3.0024
+# beta_3        2.8543
 # delta_1       3.6507
 # delta_2       3.1784
 

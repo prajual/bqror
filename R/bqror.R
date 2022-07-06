@@ -2,45 +2,44 @@
 #'
 #' @description
 #'
-#' Provides functions for estimating Bayesian quantile regression
-#' for ordinal models, calculating covariate effects, and computing measures for
-#' model comparison. Specifically, the package offers two estimation functions -
-#' one for an ordinal model with more than three outcomes. For each ordinal model,
-#' the package provides functions to calculate the covariate effect using the MCMC
-#' outputs. The package also computes marginal likelihood (recommended) and the
-#' Deviance Information Criterion (DIC) for comparing alternative quantile regression
-#' models. Besides, the package also contains functions for making trace plots of MCMC draws
-#' and other functions that aids the estimation or inference of quantile ordinal models.
+#' Package provides functions for estimating Bayesian quantile regression with ordinal outcomes,
+#' computing the covariate effects, model comparison measures, and inefficiency factor. The generic
+#' ordinal model with 3 or more outcomes (labeled OR1 model) is estimated by a combination of Gibbs
+#' sampling and Metropolis-Hastings algorithm. Whereas an ordinal model with exactly 3 outcomes
+#' (labeled OR2 model) is estimated using Gibbs sampling only. For each model framework, there is a
+#' specific function for estimation. The summary output produces estimates for regression quantiles
+#' and two measures of model comparison — log of marginal likelihood and Deviance Information Criterion
+#' (DIC). The package also has specific functions for computing the covariate effects and other functions
+#' that aids either the estimation or inference in quantile ordinal models
 #'
 #' @details
 #' \deqn{Package: bqror}
 #' \deqn{Type: Package}
-#' \deqn{Version: 1.3.1}
+#' \deqn{Version: 1.4.0}
 #' \deqn{License: GPL (>=2)}
 #'
 #' Package \strong{bqror} provides the following functions:
 #'
 #' \itemize{
-#' \item{For an Ordinal Model with three outcomes:}
+#' \item{For an ordinal model with three or more outcomes:}
 #' }
-#' \code{\link[bqror]{quantregOR2}}, \code{\link[bqror]{drawlatentOR2}},
-#' \code{\link[bqror]{drawbetaOR2}}, \code{\link[bqror]{drawsigmaOR2}},
-#' \code{\link[bqror]{drawnuOR2}}, \code{\link[bqror]{devianceOR2}},
-#' \code{\link[bqror]{qrnegLogLikeOR2}}, \code{\link[bqror]{rndald}},
-#' \code{\link[bqror]{infactorOR2}},
-#' \code{\link[bqror]{covEffectOR2}},\code{\link[bqror]{logMargLikelihoodOR2}}
+#' \code{\link[bqror]{quantregOR1}}, \code{\link[bqror]{covEffectOR1}},
+#' \code{\link[bqror]{logMargLikeOR1}}, \code{\link[bqror]{devianceOR1}},
+#' \code{\link[bqror]{qrnegLogLikensumOR1}}, \code{\link[bqror]{infactorOR1}},
+#' \code{\link[bqror]{qrminfundtheorem}}, \code{\link[bqror]{drawbetaOR1}},
+#' \code{\link[bqror]{drawwOR1}}, \code{\link[bqror]{drawlatentOR1}},
+#' \code{\link[bqror]{drawdeltaOR1}}, \code{\link[bqror]{alcdfstd}},
+#' \code{\link[bqror]{alcdf}}, \code{\link[bqror]{logLik.bqrorOR1}}
 #'
 #' \itemize{
-#' \item{For an Ordinal Model with more than three outcomes:}
+#' \item{For an ordinal model with three outcomes:}
 #' }
-#' \code{\link[bqror]{quantregOR1}}, \code{\link[bqror]{qrminfundtheorem}},
-#' \code{\link[bqror]{qrnegLogLikensumOR1}}, \code{\link[bqror]{drawbetaOR1}},
-#' \code{\link[bqror]{drawwOR1}}, \code{\link[bqror]{drawlatentOR1}},
-#' \code{\link[bqror]{drawdeltaOR1}}, \code{\link[bqror]{devianceOR1}},
-#' \code{\link[bqror]{alcdfstd}}, \code{\link[bqror]{alcdf}},
-#' \code{\link[bqror]{infactorOR1}},
-#' \code{\link[bqror]{covEffectOR1}}, \code{\link[bqror]{logMargLikelihoodOR1}}
-#'
+#' \code{\link[bqror]{quantregOR2}}, \code{\link[bqror]{covEffectOR2}},
+#' \code{\link[bqror]{logMargLikeOR2}}, \code{\link[bqror]{devianceOR2}},
+#' \code{\link[bqror]{qrnegLogLikeOR2}}, \code{\link[bqror]{infactorOR2}},
+#' \code{\link[bqror]{drawlatentOR2}}, \code{\link[bqror]{drawbetaOR2}},
+#' \code{\link[bqror]{drawsigmaOR2}}, \code{\link[bqror]{drawnuOR2}},
+#' \code{\link[bqror]{rndald}}
 #'
 #' @author
 #' Mohammad Arshad Rahman
@@ -68,7 +67,7 @@
 #' \link[stats]{rexp}, \link[stats]{rnorm},
 #' \link[pracma]{std}, \link[stats]{sd}, \link[stats]{acf},
 #' \link[pracma]{Reshape}, \link[progress]{progress_bar},
-#' \link[invgamma]{dinvgamma}
+#' \link[invgamma]{dinvgamma}, \link[stats]{logLik}
 #'
 #' @docType package
 #' @name bqror

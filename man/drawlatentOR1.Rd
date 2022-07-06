@@ -2,49 +2,48 @@
 % Please edit documentation in R/ORI.R
 \name{drawlatentOR1}
 \alias{drawlatentOR1}
-\title{Samples the latent variable z for ordinal quantile model
-with more than 3 outcomes}
+\title{Samples latent variable z for OR1 model}
 \usage{
 drawlatentOR1(y, x, beta, w, theta, tau2, delta)
 }
 \arguments{
-\item{y}{observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.}
+\item{y}{observed ordinal outcomes, column vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{beta}{Gibbs draw of coefficients of dimension \eqn{(k x 1)}.}
+\item{beta}{Gibbs draw of \eqn{\beta}, a column vector of size \eqn{(k x 1)}.}
 
-\item{w}{latent weights vector.}
+\item{w}{latent weights, column vector of size size \eqn{(n x 1)}.}
 
 \item{theta}{(1-2p)/(p(1-p)).}
 
 \item{tau2}{2/(p(1-p)).}
 
-\item{delta}{row vector of cutpoints including -Inf and Inf.}
+\item{delta}{row vector of cutpoints including (-Inf, Inf).}
 }
 \value{
-column vector of values for latent variable, z.
+column vector of latent variable z from a univariate truncated distribution.
 }
 \description{
-This function samples the latent variable z from a truncated
-normal distribution for ordinal quantile model with more than 3 outcomes.
+This function samples the latent variable z from a univariate truncated
+normal distribution for OR1 model (ordinal quantile model with 3 or more outcomes).
 }
 \details{
-Function samples the latent variable z from a truncated normal
+This function samples the latent variable z from a univariate truncated normal
 distribution.
 }
 \examples{
 set.seed(101)
 data("data25j4")
-x <- data25j4$x
 y <- data25j4$y
+xMat <- data25j4$x
 p <- 0.25
 beta <- c(0.3990094, 0.8168991, 2.8034963)
 w <- 1.114347
 theta <- 2.666667
 tau2 <- 10.66667
 delta <- c(-0.002570995,  1.044481071)
-output <- drawlatentOR1(y, x, beta, w, theta, tau2, delta)
+output <- drawlatentOR1(y, xMat, beta, w, theta, tau2, delta)
 
 # output
 #   0.6261896 3.129285 2.659578 8.680291

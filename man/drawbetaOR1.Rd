@@ -2,17 +2,16 @@
 % Please edit documentation in R/ORI.R
 \name{drawbetaOR1}
 \alias{drawbetaOR1}
-\title{Samples \eqn{\beta} for ordinal quantile model
-with more than 3 outcomes}
+\title{Samples \eqn{\beta} for OR1 model}
 \usage{
 drawbetaOR1(z, x, w, tau2, theta, invB0, invB0b0)
 }
 \arguments{
-\item{z}{dependent variable i.e. ordinal outcome values.}
+\item{z}{continuous latent values, vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{w}{latent weights, column vector.}
+\item{w}{latent weights, column vector of size size \eqn{(n x 1)}.}
 
 \item{tau2}{2/(p(1-p)).}
 
@@ -26,29 +25,29 @@ drawbetaOR1(z, x, w, tau2, theta, invB0, invB0b0)
 Returns a list with components
 \itemize{
 \item{\code{beta}: }{column vector of \eqn{\beta}
-from a multivariate normal distribution.}
-\item{\code{Btilde}: }{variance parameter for the normal
+from the posterior multivariate normal distribution.}
+\item{\code{Btilde}: }{variance parameter for the posterior multivariate normal
  distribution.}
 \item{\code{btilde}: }{mean parameter for the
-normal distribution.}
+posterior multivariate normal distribution.}
 }
 }
 \description{
 This function samples \eqn{\beta} from its conditional
-posterior distribution for ordinal quantile model with more than 3
-outcomes i.e. ORI model.
+posterior distribution for OR1 model (ordinal quantile model with 3 or more
+outcomes).
 }
 \details{
-Function samples a vector of \eqn{\beta} from a multivariate
+This function samples a vector of \eqn{\beta} from posterior multivariate
 normal distribution.
 }
 \examples{
 set.seed(101)
 data("data25j4")
-x <- data25j4$x
+xMat <- data25j4$x
 p <- 0.25
-n <- dim(x)[1]
-k <- dim(x)[2]
+n <- dim(xMat)[1]
+k <- dim(xMat)[2]
 w <- array( (abs(rnorm(n, mean = 2, sd = 1))), dim = c (n, 1))
 theta <- 2.666667
 tau2 <- 10.66667
@@ -61,7 +60,7 @@ invB0 <- matrix(c(
      0, 0, 1),
      nrow = 3, ncol = 3, byrow = TRUE)
 invB0b0 <- invB0 \%*\% b0
-output <- drawbetaOR1(z, x, w, tau2, theta, invB0, invB0b0)
+output <- drawbetaOR1(z, xMat, w, tau2, theta, invB0, invB0b0)
 
 # output$beta
 #   -0.2481837 0.7837995 -3.4680418

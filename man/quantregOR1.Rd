@@ -2,25 +2,26 @@
 % Please edit documentation in R/ORI.R
 \name{quantregOR1}
 \alias{quantregOR1}
-\title{Bayesian quantile regression for ordinal quantile model
-with more than 3 outcomes}
+\title{Bayesian quantile regression for OR1 model}
 \usage{
-quantregOR1(y, x, b0, B0, d0, D0, mcmc, p, tune, verbose)
+quantregOR1(y, x, b0, B0, d0, D0, burn, mcmc, p, tune, verbose)
 }
 \arguments{
-\item{y}{observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.}
+\item{y}{observed ordinal outcomes, column vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{b0}{prior mean for normal distribution to sample \eqn{\beta}, default is 0.}
+\item{b0}{prior mean for \eqn{\beta}.}
 
-\item{B0}{prior variance for normal distribution to sample \eqn{\beta}.}
+\item{B0}{prior covariance matrix for \eqn{\beta}.}
 
-\item{d0}{prior mean of normal distribution to sample \eqn{\delta}, default is 0.}
+\item{d0}{prior mean for \eqn{\delta}.}
 
-\item{D0}{prior variance for normal distribution to sample \eqn{\delta}.}
+\item{D0}{prior covariance matrix for \eqn{\delta}.}
 
-\item{mcmc}{number of MCMC iterations, post burn-in, default is 15000.}
+\item{burn}{number of burn-in MCMC iterations.}
+
+\item{mcmc}{number of MCMC iterations, post burn-in.}
 
 \item{p}{quantile level or skewness parameter, p in (0,1).}
 
@@ -29,52 +30,54 @@ quantregOR1(y, x, b0, B0, d0, D0, mcmc, p, tune, verbose)
 \item{verbose}{whether to print the final output and provide additional information or not, default is TRUE.}
 }
 \value{
-Returns a list with components:
+Returns a bqrorOR1 object with components:
 \itemize{
 \item{\code{summary}: }{summary of the MCMC draws.}
-\item{\code{postMeanbeta}: }{vector with mean of sampled
- \eqn{\beta} for each covariate.}
- \item{\code{postMeandelta}: }{vector with mean of sampled
- \eqn{\delta} for each cut point.}
- \item{\code{postStdbeta}: }{vector with standard deviation
- of sampled \eqn{\beta} for each covariate.}
- \item{\code{postStddelta}: }{vector with standard deviation
- of sampled \eqn{\delta} for each cut point.}
- \item{\code{gamma}: }{vector of cut points including Inf and
- -Inf.}
+\item{\code{postMeanbeta}: }{posterior mean of \eqn{\beta} from the complete MCMC run.}
+ \item{\code{postMeandelta}: }{posterior mean of \eqn{\delta} from the complete MCMC run.}
+ \item{\code{postStdbeta}: }{posterior standard deviation of \eqn{\beta} from the complete MCMC run.}
+ \item{\code{postStddelta}: }{posterior standard deviation of \eqn{\delta} from the complete MCMC run.}
+ \item{\code{gamma}: }{vector of cut points including (Inf, -Inf).}
  \item{\code{catt}}
- \item{\code{acceptancerate}: }{scalar to judge the acceptance
- rate of samples.}
- \item{\code{allQuantDIC}: }{results of the DIC criteria.}
- \item{\code{logMargLikelihood}: }{scalar value for log marginal likelihood.}
- \item{\code{beta}: }{matrix with all sampled values for \eqn{\beta}.}
- \item{\code{delta}: }{matrix with all sampled values for \eqn{\delta}.}
+ \item{\code{acceptancerate}: }{Acceptance rate of the proposed draws of \eqn{\delta}.}
+ \item{\code{allQuantDIC}: }{All quantities of DIC.}
+ \item{\code{logMargLike}: }{An estimate of log marginal likelihood.}
+ \item{\code{betadraws}: }{\eqn{\beta} draws from the complete MCMC run, size is \eqn{(k x nsim)}.}
+ \item{\code{deltadraws}: }{\eqn{\delta} draws from the complete MCMC run, size is \eqn{((J-2) x nsim)}.}
 }
 }
 \description{
-This function estimates Bayesian quantile regression for ordinal quantile model with
-more than 3 outcomes and reports the posterior mean, posterior standard deviation, and 95
-percent posterior credible intervals of \eqn{(\beta, \delta)}.
+This function estimates Bayesian quantile regression for OR1 model (ordinal quantile model with 3
+or more outcomes) and reports the posterior mean, posterior standard deviation, and 95
+percent posterior credible intervals of \eqn{(\beta, \delta)}. The output also displays the log of
+marginal likelihood and DIC.
 }
 \details{
-Function implements the Bayesian quantile regression for
-ordinal model with more than 3 outcomes using a combination of Gibbs sampling
-and Metropolis-Hastings algorithm.
+This function estimates Bayesian quantile regression for
+OR1 model using a combination of Gibbs sampling
+and Metropolis-Hastings algorithm. The function takes the prior distributions and
+other information as inputs and then iteratively samples \eqn{\beta}, latent weight w,
+\eqn{\delta}, and latent variable z from their respective
+conditional distributions.
 
-Function initializes prior and then iteratively
-samples \eqn{\beta}, \eqn{\delta} and latent variable z.
-Burn-in is taken as \eqn{0.25*mcmc} and \eqn{nsim = burn}-\eqn{in + mcmc}.
+The function also provides the logarithm of marginal likelihood and the DIC. These
+quantities can be utilized to compare two or more competing models at the same quantile.
+The model with a higher (lower) log marginal likelihood (DIC) provides a
+better model fit.
 }
 \examples{
  set.seed(101)
  data("data25j4")
- x <- data25j4$x
  y <- data25j4$y
- k <- dim(x)[2]
+ xMat <- data25j4$x
+ k <- dim(xMat)[2]
  J <- dim(as.array(unique(y)))[1]
+ b0 <- array(rep(0, k), dim = c(k, 1))
+ B0 <- 10*diag(k)
+ d0 <- array(0, dim = c(J-2, 1))
  D0 <- 0.25*diag(J - 2)
- output <- quantregOR1(y = y,x = x, b0 = 0, B0 = 10*diag(k), d0 = 0, D0 = D0,
- mcmc = 40, p = 0.25, tune = 1, verbose = TRUE)
+ output <- quantregOR1(y = y, x = xMat, b0 ,B0, d0, D0,
+ burn = 10, mcmc = 40, p = 0.25, tune = 1, verbose = TRUE)
 
 
  # Number of burn-in draws: 10
@@ -83,13 +86,13 @@ Burn-in is taken as \eqn{0.25*mcmc} and \eqn{nsim = burn}-\eqn{in + mcmc}.
 
 
  #             Post Mean  Post Std   Upper Credible Lower Credible
- # beta_0       -2.6202   0.3588        -2.0560        -3.3243
- # beta_1        3.1670   0.5894         4.1713         2.1423
- # beta_2        4.2800   0.9141         5.7142         2.8625
+ # beta_1       -2.6202   0.3588        -2.0560        -3.3243
+ # beta_2        3.1670   0.5894         4.1713         2.1423
+ # beta_3        4.2800   0.9141         5.7142         2.8625
  # delta_1       0.2188   0.4043         0.6541        -0.4384
  # delta_2       0.4567   0.3055         0.7518        -0.2234
 
- # MH acceptance rate: 36
+ # MH acceptance rate: 36\%
  # Log of Marginal Likelihood: -554.61
  # DIC: 1375.33
 

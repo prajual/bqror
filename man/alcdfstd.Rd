@@ -2,7 +2,7 @@
 % Please edit documentation in R/ORI.R
 \name{alcdfstd}
 \alias{alcdfstd}
-\title{CDF of standard asymmetric Laplace distribution}
+\title{cdf of a standard asymmetric Laplace distribution}
 \usage{
 alcdfstd(x, p)
 }
@@ -12,16 +12,16 @@ alcdfstd(x, p)
 \item{p}{quantile level or skewness parameter, p in (0,1).}
 }
 \value{
-Returns the cumulative probability value from the CDF of an asymmetric
-Laplace distribution.
+Returns the cumulative probability value at point x for a standard
+AL distribution.
 }
 \description{
-This function computes the CDF of standard asymmetric
-Laplace distribution i.e. AL\eqn{(0, 1 ,p)}.
+This function computes the cdf of a standard AL
+distribution i.e. AL\eqn{(0, 1 ,p)}.
 }
 \details{
-Computes the CDF of a standard asymmetric Laplace distribution.
-\deqn{CDF(x) = F(x) = P(X \le x)} where X is a
+Computes the cdf of a standard AL distribution.
+\deqn{cdf(x) = F(x) = P(X \le x)} where X is a
 random variable that follows AL\eqn{(0, 1 ,p)}.
 }
 \examples{

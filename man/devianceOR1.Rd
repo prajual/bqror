@@ -2,27 +2,26 @@
 % Please edit documentation in R/ORI.R
 \name{devianceOR1}
 \alias{devianceOR1}
-\title{Deviance Information Criteria for ordinal quantile model
-with more than 3 outcomes}
+\title{Deviance Information Criterion for OR1 model}
 \usage{
-devianceOR1(y, x, deltastore, burn, nsim, postMeanbeta, postMeandelta, beta, p)
+devianceOR1(y, x, betadraws, deltadraws, postMeanbeta, postMeandelta, burn, mcmc, p)
 }
 \arguments{
-\item{y}{observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.}
+\item{y}{observed ordinal outcomes, column vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{deltastore}{MCMC draws of \eqn{\delta}.}
+\item{betadraws}{MCMC draws of \eqn{\beta}, size is \eqn{(k x nsim)}.}
 
-\item{burn}{number of discarded MCMC iterations.}
+\item{deltadraws}{MCMC draws of \eqn{\delta}, size is \eqn{((J-2) x nsim)}.}
 
-\item{nsim}{total number of samples, including the burn-in.}
+\item{postMeanbeta}{posterior mean of the MCMC draws of \eqn{\beta}.}
 
-\item{postMeanbeta}{mean value of \eqn{\beta} obtained from MCMC draws.}
+\item{postMeandelta}{posterior mean of the MCMC draws of \eqn{\delta}.}
 
-\item{postMeandelta}{mean value of \eqn{\delta} obtained from MCMC draws.}
+\item{burn}{number of burn-in MCMC iterations.}
 
-\item{beta}{MCMC draw of coefficients, dimension is \eqn{(k x nsim)}.}
+\item{mcmc}{number of MCMC iterations, post burn-in.}
 
 \item{p}{quantile level or skewness parameter, p in (0,1).}
 }
@@ -33,33 +32,39 @@ Returns a list with components
 \deqn{devpostmean = -2*(logLikelihood)}.
 }
 \description{
-Function for computing the Deviance information criteria for ordinal quantile
-model with more than 3 outcomes.
+Function for computing the Deviance Information Criterion (DIC) for OR1 model (ordinal quantile
+model with 3 or more outcomes).
 }
 \details{
 Deviance is -2*(log likelihood) and has an important role in
 statistical model comparison because of its relation with Kullback-Leibler
-information criteria.
+information criterion.
+
+This function provides the DIC, which can be used to compare two or more models at the
+same quantile. The model with a lower DIC provides a better fit.
 }
 \examples{
 set.seed(101)
 data("data25j4")
-x <- data25j4$x
 y <- data25j4$y
-k <- dim(x)[2]
+xMat <- data25j4$x
+k <- dim(xMat)[2]
 J <- dim(as.array(unique(y)))[1]
+b0 <- array(rep(0, k), dim = c(k, 1))
+B0 <- 10*diag(k)
+d0 <- array(0, dim = c(J-2, 1))
 D0 <- 0.25*diag(J - 2)
-output <- quantregOR1(y = y, x = x, b0 = 0, B0 = 10*diag(k), d0 = 0, D0 = D0,
-mcmc = 40, p = 0.25, tune = 1, verbose = FALSE)
+output <- quantregOR1(y = y, x = xMat, b0, B0, d0, D0,
+burn = 10, mcmc = 40, p = 0.25, tune = 1, verbose = FALSE)
 mcmc <- 40
-deltastore <- output$delta
+deltadraws <- output$deltadraws
+betadraws <- output$betadraws
 burn <- 0.25*mcmc
 nsim <- burn + mcmc
 postMeanbeta <- output$postMeanbeta
 postMeandelta <- output$postMeandelta
-beta <- output$beta
-deviance <- devianceOR1(y, x, deltastore, burn, nsim,
-postMeanbeta, postMeandelta, beta, p = 0.25)
+deviance <- devianceOR1(y, xMat, betadraws, deltadraws,
+postMeanbeta, postMeandelta, burn, mcmc, p = 0.25)
 
 # DIC
 #   1375.329

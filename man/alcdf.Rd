@@ -2,32 +2,32 @@
 % Please edit documentation in R/ORI.R
 \name{alcdf}
 \alias{alcdf}
-\title{Asymmetric Laplace distribution}
+\title{cdf of an asymmetric Laplace distribution}
 \usage{
 alcdf(x, mu, sigma, p)
 }
 \arguments{
 \item{x}{scalar value.}
 
-\item{mu}{location parameter of ALD.}
+\item{mu}{location parameter of AL distribution.}
 
-\item{sigma}{scale parameter of ALD.}
+\item{sigma}{scale parameter of AL distribution.}
 
 \item{p}{quantile or skewness parameter, p in (0,1).}
 }
 \value{
-Returns a scalar with cumulative probability value at
+Returns the cumulative probability value at
 point “x”.
 }
 \description{
-This function computes the cumulative distribution function (CDF) of
-an asymmetric Laplace distribution.
+This function computes the cumulative distribution function (cdf) of
+an asymmetric Laplace (AL) distribution.
 }
 \details{
-Computes the cumulative distribution function of
-the asymmetric Laplace distribution.
+Computes the cdf of
+an AL distribution.
 \deqn{CDF(x) = F(x) = P(X \le x)} where X is a
-random variable
+random variable that follows AL(\eqn{\mu}, \eqn{\sigma}, p)
 }
 \examples{
 set.seed(101)

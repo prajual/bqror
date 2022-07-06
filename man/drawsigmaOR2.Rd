@@ -2,19 +2,18 @@
 % Please edit documentation in R/ORII.R
 \name{drawsigmaOR2}
 \alias{drawsigmaOR2}
-\title{Samples the \eqn{\sigma} for ordinal quantile model
-with 3 outcomes}
+\title{Samples \eqn{\sigma} for OR2 model}
 \usage{
 drawsigmaOR2(z, x, beta, nu, tau2, theta, n0, d0)
 }
 \arguments{
-\item{z}{Gibbs draw of latent response variable, a column vector.}
+\item{z}{Gibbs draw of continuous latent values, a column vector of size \eqn{n x 1}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{beta}{Gibbs draw of coefficients of dimension \eqn{(k x 1)}.}
+\item{beta}{Gibbs draw of \eqn{\beta}, a column vector of size \eqn{(k x 1)}.}
 
-\item{nu}{modified scale factor, row vector.}
+\item{nu}{modified latent weight, column vector of size \eqn{(n x 1)}.}
 
 \item{tau2}{2/(p(1-p)).}
 
@@ -27,19 +26,17 @@ drawsigmaOR2(z, x, beta, nu, tau2, theta, n0, d0)
 \value{
 Returns a list with components
 \itemize{
-\item{\code{sigma}: }{column vector of the \eqn{\sigma}
+\item{\code{sigma}: }{column vector of \eqn{\sigma}
 from an inverse gamma distribution.}
-\item{\code{dtilde}: }{scale parameter for the inverse
-gamma distribution.}
+\item{\code{dtilde}: }{scale parameter for inverse-gamma distribution.}
 }
 }
 \description{
-This function samples the \eqn{\sigma} from an inverse-gamma distribution
-for ordinal quantile model with 3 outcomes.
+This function samples \eqn{\sigma} from an inverse-gamma distribution
+for OR2 model (ordinal quantile model with exactly 3 outcomes).
 }
 \details{
-Function samples the \eqn{\sigma} from an inverse
-gamma distribution.
+This function samples \eqn{\sigma} from an inverse-gamma distribution.
 }
 \examples{
 set.seed(101)
@@ -58,7 +55,8 @@ x <- matrix(c(
      1, -1.1372480, 1.7537353),
      nrow = 10, ncol = 3, byrow = TRUE)
 beta <- c(-0.74441, 1.364846, 0.7159231)
-nu <- c(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
+n <- dim(x)[1]
+nu <- array(5 * rep(1,n), dim = c(n, 1))
 tau2 <- 10.6667
 theta <- 2.6667
 n0 <- 5

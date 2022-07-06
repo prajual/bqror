@@ -2,52 +2,52 @@
 % Please edit documentation in R/ORII.R
 \name{drawlatentOR2}
 \alias{drawlatentOR2}
-\title{Samples the latent variable z for ordinal quantile model
-with 3 outcomes}
+\title{Samples latent variable z for OR2 model}
 \usage{
-drawlatentOR2(y, x, beta, sigma, nu, theta, tau2, gammacp)
+drawlatentOR2(y, x, beta, sigma, nu, theta, tau2, gammaCp)
 }
 \arguments{
-\item{y}{observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.}
+\item{y}{observed ordinal outcomes, column vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{beta}{column vector of coefficients of dimension \eqn{(k x 1)}.}
+\item{beta}{Gibbs draw of \eqn{\beta}, a column vector of size \eqn{(k x 1)}.}
 
-\item{sigma}{scale factor, a scalar value.}
+\item{sigma}{\eqn{\sigma}, a scalar value.}
 
-\item{nu}{modified scale factor, row vector.}
+\item{nu}{modified latent weight, column vector of size \eqn{(n x 1)}.}
 
 \item{theta}{(1-2p)/(p(1-p)).}
 
 \item{tau2}{2/(p(1-p)).}
 
-\item{gammacp}{row vector of cut-points including -Inf and Inf.}
+\item{gammaCp}{row vector of cut-points including -Inf and Inf.}
 }
 \value{
-Returns a column vector of values for latent variable z.
+column vector of latent variable z from a univariate truncated distribution.
 }
 \description{
-This function samples the latent variable z from a truncated
-normal distribution for ordinal quantile model with 3 outcomes.
+This function samples the latent variable z from a univariate truncated
+normal distribution for OR2 model (ordinal quantile model with exactly 3 outcomes).
 }
 \details{
-Function samples the latent variable z from a truncated normal
+This function samples the latent variable z from a univariate truncated normal
 distribution.
 }
 \examples{
 set.seed(101)
 data("data25j3")
-x <- data25j3$x
 y <- data25j3$y
+xMat <- data25j3$x
 beta <- c(1.810504, 1.850332, 6.181163)
 sigma <- 0.9684741
-nu <- c(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
+n <- dim(xMat)[1]
+nu <- array(5 * rep(1,n), dim = c(n, 1))
 theta <- 2.6667
 tau2 <- 10.6667
-gammacp <- c(-Inf, 0, 3, Inf)
-output <- drawlatentOR2(y, x, beta, sigma, nu,
-theta, tau2, gammacp)
+gammaCp <- c(-Inf, 0, 3, Inf)
+output <- drawlatentOR2(y, xMat, beta, sigma, nu,
+theta, tau2, gammaCp)
 
 # output
 #   1.257096 10.46297 4.138694

@@ -2,27 +2,28 @@
 % Please edit documentation in R/ORI.R
 \name{covEffectOR1}
 \alias{covEffectOR1}
-\title{Covariate effect for Bayesian quantile regression for ordinal quantile model
-with more than 3 outcomes}
+\title{Covariate effect for OR1 model}
 \usage{
-covEffectOR1(model, y, x, modX, p)
+covEffectOR1(modelOR1, y, xMat1, xMat2, p, verbose)
 }
 \arguments{
-\item{model}{outcome of the ORI (quantregOR1) model.}
+\item{modelOR1}{output from the quantregOR1 function.}
 
-\item{y}{observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.}
+\item{y}{observed ordinal outcomes, column vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.
-If the covariate of interest is continuous, then the column for the covariate of interest remains unchanged.
+\item{xMat1}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
+If the covariate of interest is continuous, then the column for the covariate of interest remains unchanged (xMat1 = x).
 If it is an indicator variable then replace the column for the covariate of interest with a
 column of zeros.}
 
-\item{modX}{matrix x with suitable modification to an independent variable including a column of ones with
+\item{xMat2}{matrix x with suitable modification to an independent variable including a column of ones with
 or without column names. If the covariate of interest is continuous, then add the incremental change
 to each observation in the column for the covariate of interest. If the covariate is an indicator variable,
 then replace the column for the covariate of interest with a column of ones.}
 
 \item{p}{quantile level or skewness parameter, p in (0,1).}
+
+\item{verbose}{whether to print the final output and provide additional information or not, default is TRUE.}
 }
 \value{
 Returns a list with components:
@@ -33,28 +34,31 @@ probabilities for each outcome category.}
 }
 \description{
 This function computes the average covariate effect for different
-outcomes of the ORI model at the specified quantiles. The covariate
+outcomes of the OR1 model at a specified quantile. The covariate
 effects are calculated marginally of the parameters and the remaining covariates.
 }
 \details{
 This function computes the average covariate effect for different
-outcomes of the ORI model at the specified quantiles. The covariate
-effects are calculated marginally of the parameters and the remaining covariates. The computation of covariate effects utilizes
-the MCMC outputs from estimation.
+outcomes of the OR1 model at a specified quantile. The covariate
+effects are computed marginally of the parameters and the remaining covariates,
+and utilizes draws from MCMC sampling.
 }
 \examples{
 set.seed(101)
 data("data25j4")
-x <- data25j4$x
 y <- data25j4$y
-k <- dim(x)[2]
+xMat1 <- data25j4$x
+k <- dim(xMat1)[2]
 J <- dim(as.array(unique(y)))[1]
+b0 <- array(rep(0, k), dim = c(k, 1))
+B0 <- 10*diag(k)
+d0 <- array(0, dim = c(J-2, 1))
 D0 <- 0.25*diag(J - 2)
-output <- quantregOR1(y = y, x = x, b0 = 0, B0 = 10*diag(k), d0 = 0, D0 = D0,
-mcmc = 30, p = 0.25, tune = 1, verbose = FALSE)
-modX <- x
-modX[,3] <- modX[,3] + 0.02
-res <- covEffectOR1(output, y, x, modX, p = 0.25)
+modelOR1 <- quantregOR1(y = y, x = xMat1, b0, B0, d0, D0,
+burn = 10, mcmc = 40, p = 0.25, tune = 1, verbose = FALSE)
+xMat2 <- xMat1
+xMat2[,3] <- xMat2[,3] + 0.02
+res <- covEffectOR1(modelOR1, y, xMat1, xMat2, p = 0.25, verbose = TRUE)
 
 # Summary of Covariate Effect:
 

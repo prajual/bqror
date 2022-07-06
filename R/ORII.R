@@ -1,47 +1,47 @@
-#' Bayesian quantile regression for ordinal quantile model
-#' with 3 outcomes
+#' Bayesian quantile regression for OR2 model
 #'
-#' This function estimates Bayesian quantile regression for ordinal quantile model with
-#' 3 outcomes and reports the posterior mean, posterior standard deviation, and 95
-#' percent posterior credible intervals of \eqn{(\beta, \sigma)}.
+#' This function estimates Bayesian quantile regression for OR2 model (ordinal quantile model with
+#' exactly 3 outcomes) and reports the posterior mean, posterior standard deviation, and 95
+#' percent posterior credible intervals of \eqn{(\beta, \sigma)}. The output also displays the log of
+#' marginal likelihood and DIC.
 #'
-#' @usage quantregOR2(y, x, b0, B0 , n0, d0, gamma, mcmc, p, verbose)
+#' @usage quantregOR2(y, x, b0, B0 , n0, d0, gamma2, burn, mcmc, p, verbose)
 #'
-#' @param y                 observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.
-#' @param x                 covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.
-#' @param b0                prior mean for normal distribution to sample \eqn{\beta}, default is 0.
-#' @param B0                prior variance for normal distribution to sample \eqn{\beta}
-#' @param n0                prior for shape parameter to sample \eqn{\sigma} from inverse gamma distribution, default is 5.
-#' @param d0                prior for scale parameter to sample \eqn{\sigma} from inverse gamma distribution, default is 8.
-#' @param gamma             one and only cut-point other than 0, default is 3.
-#' @param mcmc              number of MCMC iterations, post burn-in, default is 15000.
+#' @param y                 observed ordinal outcomes, column vector of size \eqn{(n x 1)}.
+#' @param x                 covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
+#' @param b0                prior mean for \eqn{\beta}.
+#' @param B0                prior covariance matrix for \eqn{\beta}.
+#' @param n0                prior shape parameter of inverse-gamma distribution for \eqn{\sigma}, default is 5.
+#' @param d0                prior scale parameter of inverse-gamma distribution for \eqn{\sigma}, default is 8.
+#' @param gamma2            one and only cut-point other than 0, default is 3.
+#' @param burn              number of burn-in MCMC iterations.
+#' @param mcmc              number of MCMC iterations, post burn-in.
 #' @param p                 quantile level or skewness parameter, p in (0,1).
 #' @param verbose           whether to print the final output and provide additional information or not, default is TRUE.
 #'
 #' @details
-#' Function implements the Bayesian quantile regression for
-#' ordinal quantile model with 3 outcomes using a Gibbs sampling
-#' procedure.
+#' This function estimates Bayesian quantile regression for
+#' OR2 model using a Gibbs sampling procedure. The function takes the prior distributions
+#' and other information as inputs and then iteratively samples \eqn{\beta}, \eqn{\sigma},
+#' latent weight nu, and latent variable z from their respective
+#' conditional distributions.
 #'
-#' Function initializes prior and then iteratively
-#' samples \eqn{\beta}, \eqn{\sigma} and latent variable z.
-#' Burn-in is taken as \eqn{0.25*mcmc} and \eqn{nsim = burn}-\eqn{in + mcmc}.
+#' The function also provides the logarithm of marginal likelihood and the DIC. These
+#' quantities can be utilized to compare two or more competing models at the same quantile.
+#' The model with a higher (lower) log marginal likelihood (DIC) provides a
+#' better model fit.
 #'
-#' @return Returns a list with components
+#' @return Returns a bqrorOR2 object with components
 #' \itemize{
 #' \item{\code{summary}: }{summary of the MCMC draws.}
-#' \item{\code{postMeanbeta}: }{vector with mean of sampled
-#'  \eqn{\beta} for each covariate.}
-#' \item{\code{postMeansigma}: }{vector with mean of sampled
-#'  \eqn{\sigma}.}
-#' \item{\code{postStdbeta}: }{vector with standard deviation
-#'  of sampled \eqn{\beta} for each covariate.}
-#'  \item{\code{postStdsigma}: }{vector with standard deviation
-#'  of sampled \eqn{\sigma}.}
-#'  \item{\code{allQuantDIC}: }{results of the DIC criteria.}
-#'  \item{\code{logMargLikelihood}: }{scalar value for log marginal likelihood.}
-#'  \item{\code{beta}: }{matrix with all sampled values for \eqn{\beta}.}
-#'  \item{\code{sigma}: }{matrix with all sampled values for \eqn{\sigma}.}
+#' \item{\code{postMeanbeta}: }{posterior mean of \eqn{\beta} from the complete Gibbs run.}
+#' \item{\code{postMeansigma}: }{posterior mean of \eqn{\sigma} from the complete Gibbs run.}
+#' \item{\code{postStdbeta}: }{posterior standard deviation of \eqn{\beta} from the complete Gibbs run.}
+#'  \item{\code{postStdsigma}: }{posterior standard deviation of \eqn{\sigma} from the complete Gibbs run.}
+#'  \item{\code{allQuantDIC}: }{All quantities of DIC.}
+#'  \item{\code{logMargLikelihood}: }{An estimate of log marginal likelihood.}
+#'  \item{\code{betadraws}: }{\eqn{\beta} draws from the complete Gibbs run, size is \eqn{(k x nsim)}.}
+#'  \item{\code{sigmadraws}: }{\eqn{\sigma} draws from the complete Gibbs run, size is \eqn{(1 x nsim)}.}
 #' }
 #'
 #' @references Rahman, M. A. (2016). “Bayesian
@@ -68,27 +68,31 @@
 #' @examples
 #' set.seed(101)
 #' data("data25j3")
-#' x <- data25j3$x
 #' y <- data25j3$y
-#' k <- dim(x)[2]
-#' output <- quantregOR2(y = y, x = x, b0 = 0, B0 = 10*diag(k), n0 = 5, d0 = 8, gamma = 3,
-#' mcmc = 50, p = 0.25, verbose = TRUE)
+#' xMat <- data25j3$x
+#' k <- dim(xMat)[2]
+#' b0 <- array(rep(0, k), dim = c(k, 1))
+#' B0 <- 10*diag(k)
+#' n0 <- 5
+#' d0 <- 8
+#' output <- quantregOR2(y = y, x = xMat, b0, B0, n0, d0, gamma2 = 3,
+#' burn = 10, mcmc = 40, p = 0.25, verbose = TRUE)
 #'
-#' # Number of burn-in draws : 12.5
-#' # Number of retained draws : 50
+#' # Number of burn-in draws : 10
+#' # Number of retained draws : 40
 #' # Summary of MCMC draws :
 #'
 #' #            Post Mean Post Std Upper Credible Lower Credible
-#' #    beta_0   -4.5185   0.9837        -3.1726        -6.2000
-#' #    beta_1    6.1825   0.9166         7.6179         4.8619
-#' #    beta_2    5.2984   0.9653         6.9954         4.1619
+#' #    beta_1   -4.5185   0.9837        -3.1726        -6.2000
+#' #    beta_2    6.1825   0.9166         7.6179         4.8619
+#' #    beta_3    5.2984   0.9653         6.9954         4.1619
 #' #    sigma     1.0879   0.2073         1.5670         0.8436
 #'
 #' # Log of Marginal Likelihood: -404.57
 #' # DIC: 801.82
 #'
 #' @export
-quantregOR2 <- function(y, x, b0 = 0, B0 , n0 = 5, d0 = 8, gamma = 3, mcmc = 15000, p, verbose = TRUE) {
+quantregOR2 <- function(y, x, b0, B0 , n0 = 5, d0 = 8, gamma2 = 3, burn, mcmc, p, verbose = TRUE) {
     cols <- colnames(x)
     names(x) <- NULL
     names(y) <- NULL
@@ -109,23 +113,20 @@ quantregOR2 <- function(y, x, b0 = 0, B0 , n0 = 5, d0 = 8, gamma = 3, mcmc = 150
     if ( !is.numeric(mcmc)){
         stop("parameter mcmc must be a numeric")
     }
-    if ( length(gamma) != 1){
-        stop("parameter gamma must be scalar")
+    if ( !is.numeric(burn)){
+        stop("parameter burn must be a numeric")
     }
-    if ( !is.numeric(gamma)){
-        stop("parameter gamma must be a numeric")
+    if ( length(gamma2) != 1){
+        stop("parameter gamma2 must be scalar")
+    }
+    if ( !is.numeric(gamma2)){
+        stop("parameter gamma2 must be a numeric")
     }
     if ( length(p) != 1){
         stop("parameter p must be scalar")
     }
     if ( any(p < 0 | p > 1)){
         stop("parameter p must be between 0 to 1")
-    }
-    if ( length(b0) != 1){
-        stop("parameter b0 must be scalar")
-    }
-    if ( !all(is.numeric(b0))){
-        stop("parameter b0 must be numeric")
     }
     if ( length(n0) != 1){
         stop("parameter n0 must be scalar")
@@ -141,7 +142,7 @@ quantregOR2 <- function(y, x, b0 = 0, B0 , n0 = 5, d0 = 8, gamma = 3, mcmc = 150
     }
     J <- dim(as.array(unique(y)))[1]
     if ( J > 3 ){
-        stop("This function is for 3 outcome
+        stop("This function is for exactly 3 outcome
                 variables. Please correctly specify the inputs
              to use quantregOR2")
     }
@@ -149,12 +150,10 @@ quantregOR2 <- function(y, x, b0 = 0, B0 , n0 = 5, d0 = 8, gamma = 3, mcmc = 150
     k <- dim(x)[2]
     if ((dim(B0)[1] != (k)) | (dim(B0)[2] != (k))){
         stop("B0 is the prior variance to sample beta
-             must have dimension kxk")
+             must have size kxk")
     }
-    burn <- 0.25 * mcmc
     nsim <- burn + mcmc
 
-    b0 <- array(rep(b0, k), dim = c(k, 1))
     invB0 <- inv(B0)
     invB0b0 <- invB0 %*% b0
 
@@ -165,8 +164,8 @@ quantregOR2 <- function(y, x, b0 = 0, B0 , n0 = 5, d0 = 8, gamma = 3, mcmc = 150
 
     beta[, 1] <- array(rep(0,k), dim = c(k, 1))
     sigma[1] <- 2
-    nu <- 5 * rep(1, n)
-    gammacp <- array(c(-Inf, 0, gamma, Inf), dim = c(1, J+1))
+    nu <- array(5 * rep(1,n), dim = c(n, 1))
+    gammaCp <- array(c(-Inf, 0, gamma2, Inf), dim = c(1, J+1))
     lambda <- 0.5
     theta <- (1 - 2 * p) / (p * (1 - p))
     tau <- sqrt(2 / (p * (1 - p)))
@@ -189,7 +188,7 @@ quantregOR2 <- function(y, x, b0 = 0, B0 , n0 = 5, d0 = 8, gamma = 3, mcmc = 150
 
         nu <- drawnuOR2(z, x, beta[, i], sigma[i], tau2, theta, lambda)
 
-        z <- drawlatentOR2(y, x, beta[, i], sigma[i], nu, theta, tau2, gammacp)
+        z <- drawlatentOR2(y, x, beta[, i], sigma[i], nu, theta, tau2, gammaCp)
         if(verbose) {
             pb$tick()
         }
@@ -200,15 +199,13 @@ quantregOR2 <- function(y, x, b0 = 0, B0 , n0 = 5, d0 = 8, gamma = 3, mcmc = 150
     postMeansigma <- mean(sigma[(burn + 1):nsim])
     postStdsigma <- std(sigma[(burn + 1):nsim])
 
-    allQuantDIC <- devianceOR2(y, x, gammacp, p,
-                            postMeanbeta, postStdbeta,
-                            postMeansigma, postStdsigma,
-                            beta, sigma, burn, nsim)
+    allQuantDIC <- devianceOR2(y, x, beta, sigma, gammaCp,
+                            postMeanbeta, postMeansigma, burn, mcmc, p)
 
-    logMargLikelihood <- logMargLikelihoodOR2(y, x, b0, B0,
+    logMargLike <- logMargLikeOR2(y, x, b0, B0,
                                                 n0, d0, postMeanbeta,
                                                 postMeansigma, btildeStore,
-                                                BtildeStore, gamma, p, verbose)
+                                                BtildeStore, gamma2, p, verbose)
 
     postMeanbeta <- array(postMeanbeta, dim = c(k, 1))
     postStdbeta <- array(postStdbeta, dim = c(k, 1))
@@ -229,7 +226,7 @@ quantregOR2 <- function(y, x, b0 = 0, B0 , n0 = 5, d0 = 8, gamma = 3, mcmc = 150
     j <- 1
     if (is.null(cols)) {
         rownames(summary)[j] <- c('Intercept')
-        for (i in paste0("beta_",1:k-1)) {
+        for (i in paste0("beta_",1:k)) {
             rownames(summary)[j] = i
             j = j + 1
         }
@@ -249,7 +246,7 @@ quantregOR2 <- function(y, x, b0 = 0, B0 , n0 = 5, d0 = 8, gamma = 3, mcmc = 150
         cat("\n")
         print(round(summary, 4))
         cat("\n")
-        print(noquote(paste0('Log of Marginal Likelihood: ', round(logMargLikelihood, 2))))
+        print(noquote(paste0('Log of Marginal Likelihood: ', round(logMargLike, 2))))
         print(noquote(paste0('DIC: ', round(allQuantDIC$DIC, 2))))
     }
 
@@ -259,33 +256,34 @@ quantregOR2 <- function(y, x, b0 = 0, B0 , n0 = 5, d0 = 8, gamma = 3, mcmc = 150
                    "postMeansigma" = postMeansigma,
                    "postStdsigma" = postStdsigma,
                    "allQuantDIC" = allQuantDIC,
-                   "logMargLikelihood" = logMargLikelihood,
-                   "beta" = beta,
-                   "sigma" = sigma)
+                   "logMargLike" = logMargLike,
+                   "betadraws" = beta,
+                   "sigmadraws" = sigma)
+
+    class(result) <- "bqrorOR2"
     return(result)
 }
-#' Samples the latent variable z for ordinal quantile model
-#' with 3 outcomes
+#' Samples latent variable z for OR2 model
 #'
-#' This function samples the latent variable z from a truncated
-#' normal distribution for ordinal quantile model with 3 outcomes.
+#' This function samples the latent variable z from a univariate truncated
+#' normal distribution for OR2 model (ordinal quantile model with exactly 3 outcomes).
 #'
-#' @usage drawlatentOR2(y, x, beta, sigma, nu, theta, tau2, gammacp)
+#' @usage drawlatentOR2(y, x, beta, sigma, nu, theta, tau2, gammaCp)
 #'
-#' @param y         observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.
-#' @param x         covariate matrix of dimension \eqn{(n x k)} including a column of ones.
-#' @param beta      column vector of coefficients of dimension \eqn{(k x 1)}.
-#' @param sigma     scale factor, a scalar value.
-#' @param nu        modified scale factor, row vector.
+#' @param y         observed ordinal outcomes, column vector of size \eqn{(n x 1)}.
+#' @param x         covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
+#' @param beta      Gibbs draw of \eqn{\beta}, a column vector of size \eqn{(k x 1)}.
+#' @param sigma     \eqn{\sigma}, a scalar value.
+#' @param nu        modified latent weight, column vector of size \eqn{(n x 1)}.
 #' @param tau2      2/(p(1-p)).
 #' @param theta     (1-2p)/(p(1-p)).
-#' @param gammacp   row vector of cut-points including -Inf and Inf.
+#' @param gammaCp   row vector of cut-points including -Inf and Inf.
 #'
 #' @details
-#' Function samples the latent variable z from a truncated normal
+#' This function samples the latent variable z from a univariate truncated normal
 #' distribution.
 #'
-#' @return Returns a column vector of values for latent variable z.
+#' @return column vector of latent variable z from a univariate truncated distribution.
 #'
 #' @references Albert, J., and Chib, S. (1993). “Bayesian Analysis of Binary and Polychotomous
 #' Response Data.” Journal of the American Statistical
@@ -308,16 +306,17 @@ quantregOR2 <- function(y, x, b0 = 0, B0 , n0 = 5, d0 = 8, gamma = 3, mcmc = 150
 #' @examples
 #' set.seed(101)
 #' data("data25j3")
-#' x <- data25j3$x
 #' y <- data25j3$y
+#' xMat <- data25j3$x
 #' beta <- c(1.810504, 1.850332, 6.181163)
 #' sigma <- 0.9684741
-#' nu <- c(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
+#' n <- dim(xMat)[1]
+#' nu <- array(5 * rep(1,n), dim = c(n, 1))
 #' theta <- 2.6667
 #' tau2 <- 10.6667
-#' gammacp <- c(-Inf, 0, 3, Inf)
-#' output <- drawlatentOR2(y, x, beta, sigma, nu,
-#' theta, tau2, gammacp)
+#' gammaCp <- c(-Inf, 0, 3, Inf)
+#' output <- drawlatentOR2(y, xMat, beta, sigma, nu,
+#' theta, tau2, gammaCp)
 #'
 #' # output
 #' #   1.257096 10.46297 4.138694
@@ -325,7 +324,7 @@ quantregOR2 <- function(y, x, b0 = 0, B0 , n0 = 5, d0 = 8, gamma = 3, mcmc = 150
 #' #   11.17549 13.79059 28.3650 .. soon
 #'
 #' @export
-drawlatentOR2 <- function(y, x, beta, sigma, nu, theta, tau2, gammacp) {
+drawlatentOR2 <- function(y, x, beta, sigma, nu, theta, tau2, gammaCp) {
     if ( dim(y)[2] != 1){
         stop("input y should be a column vector")
     }
@@ -359,44 +358,43 @@ drawlatentOR2 <- function(y, x, beta, sigma, nu, theta, tau2, gammacp) {
     n <- dim(y)[1]
     z <- array(0, dim = c(n, 1))
     for (i in 1:n) {
-        meancomp <- (x[i, ] %*% beta) + (theta * nu[i])
-        std <- sqrt(tau2 * sigma * nu[i])
+        meancomp <- (x[i, ] %*% beta) + (theta * nu[i, 1])
+        std <- sqrt(tau2 * sigma * nu[i, 1])
         temp <- y[i]
-        a1 <- gammacp[temp]
-        b1 <- gammacp[temp + 1]
+        a1 <- gammaCp[temp]
+        b1 <- gammaCp[temp + 1]
         z[i, 1] <- rtruncnorm(n = 1, a = a1, b = b1, mean = meancomp, sd = std)
     }
     return(z)
 }
-#' Samples \eqn{\beta} for ordinal quantile model
-#' with 3 outcomes
+#' Samples \eqn{\beta} for model OR2
 #'
 #' This function samples \eqn{\beta} from its conditional
-#' posterior distribution for ordinal quantile model with 3
-#' outcomes i.e. ORII model.
+#' posterior distribution for OR2 model (ordinal quantile model with exactly 3
+#' outcomes).
 #'
 #' @usage drawbetaOR2(z, x, sigma, nu, tau2, theta, invB0, invB0b0)
 #'
-#' @param z         dependent variable i.e. ordinal outcome values.
-#' @param x         covariate matrix of dimension \eqn{(n x k)} including a column of ones.
-#' @param sigma     scale factor, a scalar value.
-#' @param nu        modified scale factor, row vector.
+#' @param z         continuous latent values, vector of size \eqn{(n x 1)}.
+#' @param x         covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
+#' @param sigma     \eqn{\sigma}, a scalar value.
+#' @param nu        modified latent weight, column vector of size \eqn{(n x 1)}.
 #' @param tau2      2/(p(1-p)).
 #' @param theta     (1-2p)/(p(1-p)).
 #' @param invB0     inverse of prior covariance matrix of normal distribution.
 #' @param invB0b0   prior mean pre-multiplied by invB0.
 #'
 #' @details
-#' Function samples a vector of \eqn{\beta} from a multivariate normal distribution.
+#' This function samples a vector of \eqn{\beta} from posterior multivariate normal distribution.
 #'
 #' @return Returns a list with components
 #' \itemize{
 #' \item{\code{beta}: }{column vector of \eqn{\beta}
-#' from a multivariate normal distribution.}
-#' \item{\code{Btilde}: }{variance parameter for the normal
-#'  distribution.}
+#' from the posterior multivariate normal distribution.}
+#' \item{\code{Btilde}: }{variance parameter for the posterior
+#' multivariate normal distribution.}
 #' \item{\code{btilde}: }{mean parameter for the
-#' normal distribution.}
+#' posterior multivariate normal distribution.}
 #' }
 #'
 #' @references Rahman, M. A. (2016). “Bayesian
@@ -432,7 +430,8 @@ drawlatentOR2 <- function(y, x, beta, sigma, nu, theta, tau2, gammacp) {
 #'      1, -1.1372480, 1.7537353),
 #'      nrow = 10, ncol = 3, byrow = TRUE)
 #' sigma <- 1.809417
-#' nu <- c(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
+#' n <- dim(x)[1]
+#' nu <- array(5 * rep(1,n), dim = c(n, 1))
 #' tau2 <- 10.6667
 #' theta <- 2.6667
 #' invB0 <- matrix(c(
@@ -486,8 +485,8 @@ drawbetaOR2 <- function(z, x, sigma, nu, tau2, theta, invB0, invB0b0) {
     q <- array(0, dim = c(1, k))
     eye <- diag(k)
     for (i in 1:n) {
-        meancomp[i, ] <- (x[i, ] * (z[i] - (theta * nu[i])) ) / (tau2 * sigma * nu[i])
-        varcomp[, , i] <- ( x[i, ] %*% t(x[i, ])) / (tau2 * sigma * nu[i])
+        meancomp[i, ] <- (x[i, ] * (z[i] - (theta * nu[i, 1])) ) / (tau2 * sigma * nu[i,1])
+        varcomp[, , i] <- ( x[i, ] %*% t(x[i, ])) / (tau2 * sigma * nu[i,1])
     }
     Btilde <- inv(invB0 + rowSums(varcomp, dims = 2))
     btilde <- Btilde %*% (invB0b0 + colSums(meancomp))
@@ -500,33 +499,30 @@ drawbetaOR2 <- function(z, x, sigma, nu, tau2, theta, invB0, invB0b0) {
 
     return(betaReturns)
 }
-#' Samples the \eqn{\sigma} for ordinal quantile model
-#' with 3 outcomes
+#' Samples \eqn{\sigma} for OR2 model
 #'
-#' This function samples the \eqn{\sigma} from an inverse-gamma distribution
-#' for ordinal quantile model with 3 outcomes.
+#' This function samples \eqn{\sigma} from an inverse-gamma distribution
+#' for OR2 model (ordinal quantile model with exactly 3 outcomes).
 #'
 #' @usage drawsigmaOR2(z, x, beta, nu, tau2, theta, n0, d0)
 #'
-#' @param z         Gibbs draw of latent response variable, a column vector.
-#' @param x         covariate matrix of dimension \eqn{(n x k)} including a column of ones.
-#' @param beta      Gibbs draw of coefficients of dimension \eqn{(k x 1)}.
-#' @param nu        modified scale factor, row vector.
+#' @param z         Gibbs draw of continuous latent values, a column vector of size \eqn{n x 1}.
+#' @param x         covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
+#' @param beta      Gibbs draw of \eqn{\beta}, a column vector of size \eqn{(k x 1)}.
+#' @param nu        modified latent weight, column vector of size \eqn{(n x 1)}.
 #' @param tau2      2/(p(1-p)).
 #' @param theta     (1-2p)/(p(1-p)).
 #' @param n0        prior hyper-parameter for \eqn{\sigma}.
 #' @param d0        prior hyper-parameter for \eqn{\sigma}.
 #'
 #' @details
-#' Function samples the \eqn{\sigma} from an inverse
-#' gamma distribution.
+#' This function samples \eqn{\sigma} from an inverse-gamma distribution.
 #'
 #' @return Returns a list with components
 #' \itemize{
-#' \item{\code{sigma}: }{column vector of the \eqn{\sigma}
+#' \item{\code{sigma}: }{column vector of \eqn{\sigma}
 #' from an inverse gamma distribution.}
-#' \item{\code{dtilde}: }{scale parameter for the inverse
-#' gamma distribution.}
+#' \item{\code{dtilde}: }{scale parameter for inverse-gamma distribution.}
 #' }
 #'
 #' @importFrom "stats" "rgamma"
@@ -561,7 +557,8 @@ drawbetaOR2 <- function(z, x, sigma, nu, tau2, theta, invB0, invB0b0) {
 #'      1, -1.1372480, 1.7537353),
 #'      nrow = 10, ncol = 3, byrow = TRUE)
 #' beta <- c(-0.74441, 1.364846, 0.7159231)
-#' nu <- c(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
+#' n <- dim(x)[1]
+#' nu <- array(5 * rep(1,n), dim = c(n, 1))
 #' tau2 <- 10.6667
 #' theta <- 2.6667
 #' n0 <- 5
@@ -613,7 +610,7 @@ drawsigmaOR2 <- function(z, x, beta, nu, tau2, theta, n0, d0) {
     ntilde <- n0 + (3 * n)
     temp <- array(0, dim = c(n, 1))
     for (i in 1:n) {
-        temp[i, 1] <- (( z[i] - x[i, ] %*% beta - theta * nu[i] )^2) / (tau2 * nu[i])
+        temp[i, 1] <- (( z[i] - x[i, ] %*% beta - theta * nu[i, 1] )^2) / (tau2 * nu[i, 1])
     }
     dtilde <- sum(temp) + d0 + (2 * sum(nu))
     sigma <- 1/rgamma(n = 1, shape = (ntilde / 2), scale = (2 / dtilde))
@@ -623,28 +620,26 @@ drawsigmaOR2 <- function(z, x, beta, nu, tau2, theta, n0, d0) {
     return(sigmaReturns)
 }
 
-#' Samples the scale factor \eqn{\nu} for ordinal quantile model
-#' with 3 outcomes
+#' Samples scale factor \eqn{\nu} for OR2 model
 #'
-#' This function samples the \eqn{\nu} from a generalized inverse Gaussian (GIG)
-#' distribution for ordinal quantile model with 3 outcomes.
+#' This function samples \eqn{\nu} from a generalized inverse Gaussian (GIG)
+#' distribution for OR2 model (ordinal quantile model with exactly 3 outcomes).
 #'
 #' @usage drawnuOR2(z, x, beta, sigma, tau2, theta, lambda)
 #'
-#' @param z         Gibbs draw of latent response variable, a column vector.
-#' @param x         covariate matrix of dimension \eqn{(n x k)} including a column of ones.
-#' @param beta      Gibbs draw of coefficients of dimension \eqn{(k x 1)}.
-#' @param sigma     scale factor, a scalar.
+#' @param z         Gibbs draw of continuous latent values, a column vector.
+#' @param x         covariate matrix of size \eqn{(n x k)} including a column of ones.
+#' @param beta      Gibbs draw of \eqn{\beta}, a column vector of size \eqn{(k x 1)}.
+#' @param sigma     \eqn{\sigma}, a scalar value.
 #' @param tau2      2/(p(1-p)).
 #' @param theta     (1-2p)/(p(1-p)).
 #' @param lambda    index parameter of GIG distribution which is equal to 0.5.
 #'
 #' @details
-#' Function samples the \eqn{\nu} from a GIG
+#' This function samples \eqn{\nu} from a GIG
 #' distribution.
 #'
-#' @return Returns a row vector of the \eqn{\nu}
-#' from GIG distribution.
+#' @return column vector of \eqn{\nu} from a GIG distribution.
 #'
 #' @references  Rahman, M. A. (2016), “Bayesian
 #' Quantile Regression for Ordinal Models.”
@@ -729,32 +724,32 @@ drawnuOR2 <- function(z, x, beta, sigma, tau2, theta, lambda) {
     return(nu)
 }
 
-#' Deviance Information Criteria for ordinal quantile model
-#' with 3 outcomes
+#' Deviance Information Criterion for OR2 model
 #'
-#' Function for computing the Deviance information criteria for ordinal quantile
-#' model with 3 outcomes.
+#' Function for computing the DIC for OR2 model (ordinal quantile
+#' model with exactly 3 outcomes).
 #'
-#' @usage devianceOR2(y, x, gammacp, p, postMeanbeta, postStdbeta,
-#' postMeansigma, postStdsigma, beta, sigma, burn, nsim)
+#' @usage devianceOR2(y, x, betadraws, sigmadraws, gammaCp, postMeanbeta,
+#' postMeansigma, burn, mcmc, p)
 #'
-#' @param y              observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.
-#' @param x              covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.
-#' @param gammacp        row vector of cut-points including -Inf and Inf.
-#' @param p              quantile level or skewness parameter, p in (0,1).
+#' @param y              observed ordinal outcomes, column vector of size \eqn{(n x 1)}.
+#' @param x              covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
+#' @param betadraws      MCMC draws of \eqn{\beta}, size is \eqn{(k x nsim)}.
+#' @param sigmadraws     MCMC draws of \eqn{\sigma}, size is \eqn{(nsim x 1)}.
+#' @param gammaCp        row vector of cut-points including -Inf and Inf.
 #' @param postMeanbeta   mean value of \eqn{\beta} obtained from MCMC draws.
-#' @param postStdbeta    standard deviation of \eqn{\beta} obtained from MCMC draws.
 #' @param postMeansigma  mean value of \eqn{\sigma} obtained from MCMC draws.
-#' @param postStdsigma   standard deviation of \eqn{\sigma} obtained from MCMC draws.
-#' @param beta           MCMC draw of coefficients, dimension is \eqn{(k x nsim)}.
-#' @param sigma          MCMC draw of scale factor, dimension is \eqn{(nsim x 1)}.
-#' @param burn           number of discarded MCMC iterations.
-#' @param nsim           total number of MCMC iterations including the burn-in.
+#' @param burn           number of burn-in MCMC iterations.
+#' @param mcmc           number of MCMC iterations, post burn-in.
+#' @param p              quantile level or skewness parameter, p in (0,1).
 #'
 #' @details
 #' Deviance is -2*(log likelihood) and has an important role in
 #' statistical model comparison because of its relation with Kullback-Leibler
-#' information criteria.
+#' information criterion.
+#'
+#' This function provides the DIC, which can be used to compare two or more models at the
+#' same quantile. The model with a lower DIC provides a better fit.
 #'
 #' @return Returns a list with components
 #' \deqn{DIC = 2*avgdeviance - devpostmean}
@@ -776,23 +771,25 @@ drawnuOR2 <- function(z, x, beta, sigma, tau2, theta, lambda) {
 #' @examples
 #' set.seed(101)
 #' data("data25j3")
-#' x <- data25j3$x
 #' y <- data25j3$y
-#' k <- dim(x)[2]
-#' output <- quantregOR2(y = y, x = x, b0 = 0, B0 = 10*diag(k), n0 = 5, d0 = 8, gamma = 3,
-#' mcmc = 50, p = 0.25, verbose = FALSE)
-#' gammacp <- c(-Inf, 0, 3, Inf)
+#' xMat <- data25j3$x
+#' k <- dim(xMat)[2]
+#' b0 <- array(rep(0, k), dim = c(k, 1))
+#' B0 <- 10*diag(k)
+#' n0 <- 5
+#' d0 <- 8
+#' output <- quantregOR2(y = y, x = xMat, b0, B0, n0, d0, gamma2 = 3,
+#' burn = 10, mcmc = 40, p = 0.25, verbose = FALSE)
+#' betadraws <- output$betadraws
+#' sigmadraws <- output$sigmadraws
+#' gammaCp <- c(-Inf, 0, 3, Inf)
 #' postMeanbeta <- output$postMeanbeta
-#' postStdbeta <- output$postStdbeta
 #' postMeansigma <- output$postMeansigma
-#' postStdsigma <- output$postStdsigma
-#' beta <- output$beta
-#' sigma <- output$sigma
-#' mcmc = 50
+#' mcmc = 40
 #' burn <- 10
 #' nsim <- burn + mcmc
-#' deviance <- devianceOR2(y, x, gammacp, p = 0.25, postMeanbeta, postStdbeta,
-#' postMeansigma, postStdsigma, beta, sigma, burn, nsim)
+#' deviance <- devianceOR2(y, xMat, betadraws, sigmadraws, gammaCp,
+#' postMeanbeta, postMeansigma, burn, mcmc, p = 0.25)
 #'
 #' # DIC
 #' #   801.8191
@@ -802,9 +799,8 @@ drawnuOR2 <- function(z, x, beta, sigma, tau2, theta, lambda) {
 #' #   788.6019
 #'
 #' @export
-devianceOR2 <- function(y, x, gammacp, p, postMeanbeta, postStdbeta,
-                      postMeansigma, postStdsigma,
-                      beta, sigma, burn, nsim) {
+devianceOR2 <- function(y, x, betadraws, sigmadraws, gammaCp, postMeanbeta,
+                      postMeansigma, burn, mcmc, p) {
     cols <- colnames(x)
     names(x) <- NULL
     names(y) <- NULL
@@ -828,39 +824,34 @@ devianceOR2 <- function(y, x, gammacp, p, postMeanbeta, postStdbeta,
     if ( !all(is.numeric(postMeanbeta))){
         stop("each entry in postMeanbeta must be numeric")
     }
-    if ( !all(is.numeric(postStdbeta))){
-        stop("each entry in postStdbeta must be numeric")
-    }
     if ( !all(is.numeric(postMeansigma))){
         stop("each entry in postMeansigma must be numeric")
     }
-    if ( !all(is.numeric(postStdsigma))){
-        stop("each entry in postStdsigma must be numeric")
+    if ( !all(is.numeric(betadraws))){
+        stop("each entry in betadraws must be numeric")
     }
-    if ( !all(is.numeric(beta))){
-        stop("each entry in beta must be numeric")
+    if ( !all(is.numeric(sigmadraws))){
+        stop("each entry in sigmadraws must be numeric")
     }
-    if ( !all(is.numeric(sigma))){
-        stop("each entry in sigma must be numeric")
+    if ( length(mcmc) != 1){
+        stop("parameter mcmc must be scalar")
     }
     if ( length(burn) != 1){
-        stop("parameter burn must be scalar")
-    }
-    if ( length(nsim) != 1){
         stop("parameter nsim must be scalar")
     }
+    nsim <- mcmc + burn
     k <- dim(x)[2]
     devpostmean <- array(0, dim = c(1))
     DIC <- array(0, dim = c(1))
     pd <- array(0, dim = c(1))
-    devpostmean <- 2 * qrnegLogLikeOR2(y, x, gammacp, postMeanbeta, postMeansigma, p)
+    devpostmean <- 2 * qrnegLogLikeOR2(y, x, gammaCp, postMeanbeta, postMeansigma, p)
 
-    postBurnin <- dim(beta[, (burn + 1):nsim])[2]
+    postBurnin <- dim(betadraws[, (burn + 1):nsim])[2]
     Deviance <- array(0, dim = c(1, postBurnin))
     for (i in 1:postBurnin) {
-        Deviance[1, i] <- 2 * qrnegLogLikeOR2(y, x, gammacp,
-                                                   beta[ ,(burn + i)],
-                                                   sigma[ ,(burn + i)],
+        Deviance[1, i] <- 2 * qrnegLogLikeOR2(y, x, gammaCp,
+                                                   betadraws[ ,(burn + i)],
+                                                   sigmadraws[ ,(burn + i)],
                                                    p)
     }
     avgDeviance <- mean(Deviance)
@@ -871,24 +862,23 @@ devianceOR2 <- function(y, x, gammacp, p, postMeanbeta, postStdbeta,
                    "devpostmean" = devpostmean)
     return(result)
 }
-#' Negative log-likelihood for ordinal quantile model with 3 outcomes
+#' Negative sum of log-likelihood for OR2 model
 #'
-#' This function computes the negative of the log-likelihood for ordinal quantile
-#' model with 3 outcomes.
+#' This function computes the negative sum of log-likelihood for OR2 model (ordinal quantile
+#' model with exactly 3 outcomes).
 #'
-#' @param y         observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.
-#' @param x         covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.
-#' @param gammacp   row vector of cutpoints including -Inf and Inf.
-#' @param beta      column vector of coefficients of dimension \eqn{(k x 1)}.
-#' @param sigma     scale factor, a scalar.
+#' @param y         observed ordinal outcomes, column vector of size \eqn{(n x 1)}.
+#' @param x         covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
+#' @param gammaCp   row vector of cutpoints including (-Inf, Inf).
+#' @param betaOne   a sample draw of \eqn{\beta} of size \eqn{(k x 1)}.
+#' @param sigmaOne  a sample draw of \eqn{\sigma}, a scalar value.
 #' @param p         quantile level or skewness parameter, p in (0,1).
 #'
 #' @details
-#' Computes the negative of the log-likelihood for
-#' ordinal quantile model with 3 outcomes where the error is assumed to follow
-#' an asymmetric Laplace distribution.
+#' This function computes the negative sum of log-likelihood for OR2 model where the error is assumed to follow
+#' an AL distribution.
 #'
-#' @return Returns the negative log-likelihood value.
+#' @return Returns the negative sum of log-likelihood.
 #'
 #' @references Rahman, M. A. (2016). “Bayesian
 #' Quantile Regression for Ordinal Models.”
@@ -898,19 +888,19 @@ devianceOR2 <- function(y, x, gammacp, p, postMeanbeta, postStdbeta,
 #' @examples
 #' set.seed(101)
 #' data("data25j3")
-#' x <- data25j3$x
 #' y <- data25j3$y
+#' xMat <- data25j3$x
 #' p <- 0.25
-#' gammacp <- c(-Inf, 0, 3, Inf)
-#' beta <- c(1.810504, 1.850332, 6.18116)
-#' sigma <- 0.9684741
-#' output <- qrnegLogLikeOR2(y, x, gammacp, beta, sigma, p)
+#' gammaCp <- c(-Inf, 0, 3, Inf)
+#' betaOne <- c(1.810504, 1.850332, 6.18116)
+#' sigmaOne <- 0.9684741
+#' output <- qrnegLogLikeOR2(y, xMat, gammaCp, betaOne, sigmaOne, p)
 #'
 #' # output
 #' #   902.4045
 #'
 #' @export
-qrnegLogLikeOR2 <- function(y, x, gammacp, beta, sigma, p) {
+qrnegLogLikeOR2 <- function(y, x, gammaCp, betaOne, sigmaOne, p) {
     cols <- colnames(x)
     names(x) <- NULL
     names(y) <- NULL
@@ -925,11 +915,11 @@ qrnegLogLikeOR2 <- function(y, x, gammacp, beta, sigma, p) {
     if ( !all(is.numeric(x))){
         stop("each entry in x must be numeric")
     }
-    if ( !all(is.numeric(beta))){
-        stop("each entry in beta must be numeric")
+    if ( !all(is.numeric(betaOne))){
+        stop("each entry in betaOne must be numeric")
     }
-    if ( length(sigma) != 1){
-        stop("parameter sigma must be scalar")
+    if ( length(sigmaOne) != 1){
+        stop("parameter sigmaOne must be scalar")
     }
     if (any(p < 0 | p > 1)){
         stop("parameter p must be between 0 to 1")
@@ -937,40 +927,40 @@ qrnegLogLikeOR2 <- function(y, x, gammacp, beta, sigma, p) {
     J <- dim(unique(y))[1]
     n <- dim(y)[1]
     lnpdf <- array(0, dim = c(n, 1))
-    mu <- x %*% beta
+    mu <- x %*% betaOne
     for (i in 1:n) {
         meanf <- mu[i]
         if (y[i] == 1) {
-            lnpdf[i] <- log(alcdf(0, meanf, sigma, p))
+            lnpdf[i] <- log(alcdf(0, meanf, sigmaOne, p))
         }
         else if (y[i] == J) {
-            lnpdf[i] <- log(1 - alcdf(gammacp[J], meanf, sigma, p))
+            lnpdf[i] <- log(1 - alcdf(gammaCp[J], meanf, sigmaOne, p))
         }
         else {
-            w <- (alcdf(gammacp[J], meanf, sigma, p) -
-                      alcdf(gammacp[(J - 1)], meanf, sigma, p))
+            w <- (alcdf(gammaCp[J], meanf, sigmaOne, p) -
+                      alcdf(gammaCp[(J - 1)], meanf, sigmaOne, p))
             lnpdf[i] <- log(w)
         }
     }
     negsuminpdf <- -sum(lnpdf)
     return(negsuminpdf)
 }
-#' Generates random numbers from an asymmetric Laplace distribution
+#' Generates random numbers from an AL distribution
 #'
-#' This function generates a vector of random numbers from an asymmetric
-#' Laplace distribution with quantile p.
+#' This function generates a vector of random numbers from an AL
+#' distribution at quantile p.
 #'
 #' @usage rndald(sigma, p, n)
 #'
-#' @param sigma  scale factor, a scalar.
+#' @param sigma  scale factor, a scalar value.
 #' @param p      quantile or skewness parameter, p in (0,1).
 #' @param n      number of observations
 #'
 #' @details
-#' Generates a vector of random numbers from an asymmetric Laplace distribution,
-#' as a mixture of normal–exponential distributions.
+#' Generates a vector of random numbers from an AL distribution
+#' as a mixture of normal–exponential distribution.
 #'
-#' @return Returns a vector \eqn{(n x 1)} of random numbers using an AL(0, \eqn{\sigma}, p)
+#' @return Returns a vector \eqn{(n x 1)} of random numbers from an AL(0, \eqn{\sigma}, p)
 #'
 #' @references
 #' Kozumi, H., and Kobayashi, G. (2011). “Gibbs Sampling Methods for Bayesian Quantile Regression.”
@@ -1010,28 +1000,31 @@ rndald <- function(sigma, p, n){
     return(eps)
 }
 
-#' Inefficiency factor for ordinal quantile model
-#' with 3 outcomes
+#' Inefficiency factor for OR2 model
 #'
 #' This function calculates the inefficiency factor from the MCMC draws
-#' of \eqn{(\beta, \sigma)} for ordinal quantile model with 3 outcomes. The
+#' of \eqn{(\beta, \sigma)} for OR2 model (ordinal quantile model with exactly 3 outcomes). The
 #' inefficiency factor is calculated using the batch-means method.
 #'
-#' @usage infactorOR2(x, beta, sigma, autocorrelationCutoff)
+#' @usage infactorOR2(x, betadraws, sigmadraws, autocorrelationCutoff, verbose)
 #'
-#' @param x                         covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.
-#' @param beta                      Gibbs draw of coefficients of dimension \eqn{(k x nsim)}.
-#' @param sigma                     Gibbs draw of scale factor.
-#' @param autocorrelationCutoff     cut-off to identify the number of lags, default is 0.05.
+#' @param x                         covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
+#'                                  This input is used to extract column names, if available, and not used in calculation.
+#' @param betadraws                 Gibbs draws of \eqn{\beta} of size \eqn{(k x nsim)}.
+#' @param sigmadraws                Gibbs draws of \eqn{\sigma} of size \eqn{(1 x nsim)}.
+#' @param autocorrelationCutoff     cut-off to identify the number of lags and form batches, default is 0.05.
+#' @param verbose                   whether to print the final output and provide additional information or not, default is TRUE.
 #'
 #' @details
 #' Calculates the inefficiency factor of \eqn{(\beta, \sigma)} using the batch-means
-#' method.
+#' method based on Gibbs draws. Inefficiency factor can be interpreted as the cost of
+#' working with correlated draws. A low inefficiency factor indicates better mixing
+#' and efficient algorithm.
 #'
 #' @return Returns a list with components
 #' \itemize{
-#' \item{\code{inefficiencyBeta}: }{vector with inefficiency factor for each \eqn{\beta}.}
-#' \item{\code{inefficiencySigma}: }{vector with inefficiency factor for each \eqn{\sigma}.}
+#' \item{\code{inefficiencyBeta}: }{It is a vector with inefficiency factor for each \eqn{\beta}.}
+#' \item{\code{inefficiencySigma}: }{It is a vector with inefficiency factor for each \eqn{\sigma}.}
 #' }
 #'
 #' @importFrom "pracma" "Reshape" "std"
@@ -1044,40 +1037,44 @@ rndald <- function(sigma, p, n){
 #' @examples
 #' set.seed(101)
 #' data("data25j3")
-#' x <- data25j3$x
 #' y <- data25j3$y
-#' k <- dim(x)[2]
-#' output <- quantregOR2(y = y, x = x, b0 = 0, B0 = 10*diag(k), n0 = 5, d0 = 8, gamma = 3,
-#' mcmc = 50, p = 0.25, verbose = FALSE)
-#' beta <- output$beta
-#' sigma <- output$sigma
+#' xMat <- data25j3$x
+#' k <- dim(xMat)[2]
+#' b0 <- array(rep(0, k), dim = c(k, 1))
+#' B0 <- 10*diag(k)
+#' n0 <- 5
+#' d0 <- 8
+#' output <- quantregOR2(y = y, x = xMat, b0, B0, n0, d0, gamma2 = 3,
+#' burn = 10, mcmc = 40, p = 0.25, verbose = FALSE)
+#' betadraws <- output$betadraws
+#' sigmadraws <- output$sigmadraws
 #'
-#' inefficiency <- infactorOR2(x, beta, sigma, 0.5)
+#' inefficiency <- infactorOR2(xMat, betadraws, sigmadraws, 0.5, TRUE)
 #'
 #' # Summary of Inefficiency Factor:
 #' #            Inefficiency
-#' # beta_0       2.0011
-#' # beta_1       1.6946
-#' # beta_2       1.4633
+#' # beta_1       2.0011
+#' # beta_2       1.6946
+#' # beta_3       1.4633
 #' # sigma        2.6590
 #'
 #' @export
-infactorOR2 <- function(x, beta, sigma, autocorrelationCutoff = 0.05) {
+infactorOR2 <- function(x, betadraws, sigmadraws, autocorrelationCutoff = 0.05, verbose = TRUE) {
     cols <- colnames(x)
     names(x) <- NULL
     x <- as.matrix(x)
-    if ( !all(is.numeric(beta))){
-        stop("each entry in beta must be numeric")
+    if ( !all(is.numeric(betadraws))){
+        stop("each entry in betadraws must be numeric")
     }
-    n <- dim(beta)[2]
-    k <- dim(beta)[1]
+    n <- dim(betadraws)[2]
+    k <- dim(betadraws)[1]
     inefficiencyBeta <- array(0, dim = c(k, 1))
     for (i in 1:k) {
-        autocorrelation <- acf(beta[i,], plot = FALSE)
+        autocorrelation <- acf(betadraws[i,], plot = FALSE)
         nlags <- min(which(autocorrelation$acf <= autocorrelationCutoff))
         nbatch <- floor(n / nlags)
         nuse <- nbatch * nlags
-        b <- beta[i, 1:nuse]
+        b <- betadraws[i, 1:nuse]
         xbatch <- Reshape(b, nlags, nbatch)
         mxbatch <- colMeans(xbatch)
         varxbatch <- sum( (t(mxbatch) - mean(b)) *
@@ -1086,15 +1083,15 @@ infactorOR2 <- function(x, beta, sigma, autocorrelationCutoff = 0.05) {
         rne <- (std(b, 1) / sqrt( nuse )) / nse
         inefficiencyBeta[i, 1] <- 1 / rne
     }
-    if ( !all(is.numeric(sigma))){
-        stop("each entry in sigma must be numeric")
+    if ( !all(is.numeric(sigmadraws))){
+        stop("each entry in sigmadraws must be numeric")
     }
     inefficiencySigma <- array(0, dim = c(1))
-    autocorrelation <- acf(c(sigma), plot = FALSE)
+    autocorrelation <- acf(c(sigmadraws), plot = FALSE)
     nlags <- min(which(autocorrelation$acf <= autocorrelationCutoff))
     nbatch2 <- floor(n / nlags)
     nuse2 <- nbatch2 * nlags
-    b2 <- sigma[1:nuse2]
+    b2 <- sigmadraws[1:nuse2]
     xbatch2 <- Reshape(b2, nlags, nbatch2)
     mxbatch2 <- colMeans(xbatch2)
     varxbatch2 <- sum( (t(mxbatch2) - mean(b2)) *
@@ -1110,7 +1107,7 @@ infactorOR2 <- function(x, beta, sigma, autocorrelationCutoff = 0.05) {
     j <- 1
     if (is.null(cols)) {
         rownames(inefficiencyRes)[j] <- c('Intercept')
-        for (i in paste0("beta_",1:k-1)) {
+        for (i in paste0("beta_",1:k)) {
             rownames(inefficiencyRes)[j] = i
             j = j + 1
         }
@@ -1122,43 +1119,44 @@ infactorOR2 <- function(x, beta, sigma, autocorrelationCutoff = 0.05) {
         }
     }
     rownames(inefficiencyRes)[j] <- 'sigma'
-
+    if(verbose) {
     print(noquote('Summary of Inefficiency Factor: '))
     cat("\n")
     print(round(inefficiencyRes, 4))
+    }
 
     result <- list("inefficiencyBeta" = inefficiencyBeta,
                    "inefficiencySigma" = inefficiencySigma)
 
     return(result)
 }
-#' Covariate effect for Bayesian quantile regression for ordinal quantile model
-#' with 3 outcomes
+#' Covariate effect for OR2 model
 #'
 #' This function computes the average covariate effect for different
-#' outcomes of the ORII model at the specified quantiles. The covariate
+#' outcomes of the OR2 model at a specified quantile. The covariate
 #' effects are calculated marginally of the parameters and the remaining covariates.
 #'
-#' @usage covEffectOR2(model, y, x, modX, gamma, p)
+#' @usage covEffectOR2(modelOR2, y, xMat1, xMat2, gamma2, p, verbose)
 #'
-#' @param model     outcome of the ORII (quantregOR2) model.
-#' @param y         observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.
-#' @param x         covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.
+#' @param modelOR2  output from the quantregOR2 function.
+#' @param y         observed ordinal outcomes, column vector of size \eqn{(n x 1)}.
+#' @param xMat1     covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
 #'                  If the covariate of interest is continuous, then the column for the covariate of interest remains unchanged.
 #'                  If it is an indicator variable then replace the column for the covariate of interest with a
 #'                  column of zeros.
-#' @param modX      matrix x with suitable modification to an independent variable including a column of ones with
+#' @param xMat2     matrix x with suitable modification to an independent variable including a column of ones with
 #'                  or without column names. If the covariate of interest is continuous, then add the incremental change
 #'                  to each observation in the column for the covariate of interest. If the covariate is an indicator variable,
 #'                  then replace the column for the covariate of interest with a column of ones.
-#' @param gamma     one and only cut-point other than 0.
+#' @param gamma2    one and only cut-point other than 0.
 #' @param p         quantile level or skewness parameter, p in (0,1).
+#' @param verbose   whether to print the final output and provide additional information or not, default is TRUE.
 #'
 #' @details
 #' This function computes the average covariate effect for different
-#' outcomes of the ORII model at the specified quantiles. The covariate
-#' effects are calculated marginally of the parameters and the remaining covariates. The computation of covariate effects utilizes
-#' the MCMC outputs from estimation.
+#' outcomes of the OR2 model at a specified quantile. The covariate
+#' effects are computed marginally of the parameters and the remaining covariates,
+#' and utilizes draws from Gibbs sampling.
 #'
 #' @return Returns a list with components:
 #' \itemize{
@@ -1182,14 +1180,18 @@ infactorOR2 <- function(x, beta, sigma, autocorrelationCutoff = 0.05) {
 #' @examples
 #' set.seed(101)
 #' data("data25j3")
-#' x <- data25j3$x
 #' y <- data25j3$y
-#' k <- dim(x)[2]
-#' output <- quantregOR2(y, x, b0 = 0, B0 = 10*diag(k), n0 = 5, d0 = 8, gamma = 3,
-#' mcmc = 50, p = 0.25, verbose = FALSE)
-#' modX <- x
-#' modX[,3] <- modX[,3] + 0.02
-#' res <- covEffectOR2(output, y, x, modX, gamma = 3, p = 0.25)
+#' xMat1 <- data25j3$x
+#' k <- dim(xMat1)[2]
+#' b0 <- array(rep(0, k), dim = c(k, 1))
+#' B0 <- 10*diag(k)
+#' n0 <- 5
+#' d0 <- 8
+#' output <- quantregOR2(y, xMat1, b0, B0, n0, d0, gamma2 = 3,
+#' burn = 10, mcmc = 40, p = 0.25, verbose = FALSE)
+#' xMat2 <- xMat1
+#' xMat2[,3] <- xMat2[,3] + 0.02
+#' res <- covEffectOR2(output, y, xMat1, xMat2, gamma2 = 3, p = 0.25, verbose = TRUE)
 #'
 #' # Summary of Covariate Effect:
 #'
@@ -1199,14 +1201,14 @@ infactorOR2 <- function(x, beta, sigma, autocorrelationCutoff = 0.05) {
 #' # Category_3           0.0104
 #'
 #' @export
-covEffectOR2 <- function(model, y, x, modX, gamma, p) {
-    cols <- colnames(x)
-    cols1 <- colnames(modX)
-    names(modX) <- NULL
+covEffectOR2 <- function(modelOR2, y, xMat1, xMat2, gamma2, p, verbose = TRUE) {
+    cols <- colnames(xMat1)
+    cols1 <- colnames(xMat2)
+    names(xMat1) <- NULL
     names(y) <- NULL
-    names(x) <- NULL
-    x <- as.matrix(x)
-    modX <- as.matrix(modX)
+    names(xMat2) <- NULL
+    xMat1 <- as.matrix(xMat1)
+    xMat2 <- as.matrix(xMat2)
     y <- as.matrix(y)
     J <- dim(as.array(unique(y)))[1]
     if ( J > 3 ){
@@ -1219,33 +1221,33 @@ covEffectOR2 <- function(model, y, x, modX, gamma, p) {
     if ( any(!all(y == floor(y)))){
         stop("each entry of y must be an integer")
     }
-    if ( !all(is.numeric(x))){
-        stop("each entry in x must be numeric")
+    if ( !all(is.numeric(xMat1))){
+        stop("each entry in xMat1 must be numeric")
     }
-    if ( !all(is.numeric(modX))){
-        stop("each entry in modX must be numeric")
+    if ( !all(is.numeric(xMat2))){
+        stop("each entry in xMat2 must be numeric")
     }
     if ( length(p) != 1){
         stop("parameter p must be scalar")
     }
-    if ( length(gamma) != 1){
-        stop("parameter gamma must be scalar")
+    if ( length(gamma2) != 1){
+        stop("parameter gamma2 must be scalar")
     }
-    if ( !is.numeric(gamma)){
-        stop("parameter gamma must be a numeric")
+    if ( !is.numeric(gamma2)){
+        stop("parameter gamma2 must be a numeric")
     }
     if (any(p < 0 | p > 1)){
         stop("parameter p must be between 0 to 1")
     }
-    N <- dim(model$beta)[2]
+    N <- dim(modelOR2$betadraws)[2]
     m <- (N)/(1.25)
     burn <- 0.25 * m
-    n <- dim(x)[1]
-    k <- dim(x)[2]
-    betaBurnt <- model$beta[, (burn + 1):N]
-    sigmaBurnt <- model$sigma[(burn + 1):N]
+    n <- dim(xMat1)[1]
+    k <- dim(xMat1)[2]
+    betaBurnt <- modelOR2$betadraws[, (burn + 1):N]
+    sigmaBurnt <- modelOR2$sigmadraws[(burn + 1):N]
     mu <- 0
-    gammacp <- array(c(-Inf, 0, gamma, Inf), dim = c(1, J))
+    gammaCp <- array(c(-Inf, 0, gamma2, Inf), dim = c(1, J))
     oldProb <- array(0, dim = c(n, m, J))
     newProb <- array(0, dim = c(n, m, J))
     oldComp <- array(0, dim = c(n, m, (J-1)))
@@ -1253,8 +1255,8 @@ covEffectOR2 <- function(model, y, x, modX, gamma, p) {
     for (j in 1:(J-1)) {
         for (b in 1:m) {
             for (i in 1:n) {
-                oldComp[i, b, j] <- alcdf((gammacp[j+1] - (x[i, ] %*% betaBurnt[, b])), mu, sigmaBurnt[b], p)
-                newComp[i, b, j] <- alcdf((gammacp[j+1] - (modX[i, ] %*% betaBurnt[, b])), mu, sigmaBurnt[b], p)
+                oldComp[i, b, j] <- alcdf((gammaCp[j+1] - (xMat1[i, ] %*% betaBurnt[, b])), mu, sigmaBurnt[b], p)
+                newComp[i, b, j] <- alcdf((gammaCp[j+1] - (xMat2[i, ] %*% betaBurnt[, b])), mu, sigmaBurnt[b], p)
             }
             if (j == 1) {
                 oldProb[, b, j] <- oldComp[, b, j]
@@ -1279,44 +1281,44 @@ covEffectOR2 <- function(model, y, x, modX, gamma, p) {
         rownames(avgDiffProb)[j] = i
         j = j + 1
     }
+    if(verbose) {
     print(noquote('Summary of Covariate Effect: '))
     cat("\n")
     print(round(avgDiffProb, 4))
+    }
 
     result <- list("avgDiffProb" = avgDiffProb)
 
     return(result)
 }
-#' Marginal likelihood for ordinal quantile model
-#' with 3 outcomes
+#' Marginal likelihood for OR2 model
 #'
-#' This function computes the logarithm of marginal likelihood for ordinal
-#' quantile model with 3 outcomes using Gibbs output from the
+#' This function computes the logarithm of marginal likelihood for OR2 model (ordinal
+#' quantile model with exactly 3 outcomes) using Gibbs output from the
 #' complete and reduced runs.
 #'
-#' @usage logMargLikelihoodOR2(y, x, b0, B0, n0, d0, postMeanbeta, postMeansigma,
-#' btildeStore, BtildeStore, gamma, p, verbose)
+#' @usage logMargLikeOR2(y, x, b0, B0, n0, d0, postMeanbeta, postMeansigma,
+#' btildeStore, BtildeStore, gamma2, p, verbose)
 #'
-#' @param y                 observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.
-#' @param x                 covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.
-#' @param b0                prior mean for normal distribution to sample \eqn{\beta}.
-#' @param B0                prior variance for normal distribution to sample \eqn{\beta}
-#' @param n0                prior for shape parameter to sample \eqn{\sigma} from inverse gamma distribution.
-#' @param d0                prior for scale parameter to sample \eqn{\sigma} from inverse gamma distribution.
-#' @param postMeanbeta      a vector with mean of sampled \eqn{\beta} for each covariate.
-#' @param postMeansigma     a vector with mean of sampled \eqn{\sigma}.
-#' @param btildeStore       a storage matrix for posterior mean of \eqn{\beta}.
-#' @param BtildeStore       a storage matrix for posterior variance of \eqn{\beta}.
-#' @param gamma             one and only cut-point other than 0.
+#' @param y                 observed ordinal outcomes, column vector of size \eqn{(n x 1)}.
+#' @param x                 covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
+#' @param b0                prior mean for \eqn{\beta}.
+#' @param B0                prior covariance matrix for \eqn{\beta}.
+#' @param n0                prior shape parameter of inverse-gamma distribution for \eqn{\sigma}.
+#' @param d0                prior scale parameter of inverse-gamma distribution for \eqn{\sigma}.
+#' @param postMeanbeta      posterior mean of \eqn{\beta} from the complete Gibbs run.
+#' @param postMeansigma     posterior mean of \eqn{\delta} from the complete Gibbs run.
+#' @param btildeStore       a storage matrix for btilde from the complete Gibbs run.
+#' @param BtildeStore       a storage matrix for Btilde from the complete Gibbs run.
+#' @param gamma2            one and only cut-point other than 0.
 #' @param p                 quantile level or skewness parameter, p in (0,1).
 #' @param verbose           whether to print the final output and provide additional information or not, default is TRUE.
 #'
 #' @details
-#' Function computes the logarithm of marginal likelihood for
-#' ordinal model with 3 outcomes using a Gibbs sampling
-#' procedure.
+#' This function computes the logarithm of marginal likelihood for OR2 model using Gibbs output from complete
+#' and reduced runs.
 #'
-#' @return Returns a scalar for logarithm of marginal likelihood
+#' @return Returns an estimate of log marginal likelihood
 #'
 #' @references Rahman, M. A. (2016). “Bayesian
 #' Quantile Regression for Ordinal Models.”
@@ -1338,16 +1340,20 @@ covEffectOR2 <- function(model, y, x, modX, gamma, p) {
 #' @examples
 #' set.seed(101)
 #' data("data25j3")
-#' x <- data25j3$x
 #' y <- data25j3$y
-#' k <- dim(x)[2]
-#' output <- quantregOR2(y = y, x = x, b0 = 0, B0 = 10*diag(k), n0 = 5, d0 = 8, gamma = 3,
-#' mcmc = 50, p = 0.25, verbose = FALSE)
-#' # output$logMargLikelihood
+#' xMat <- data25j3$x
+#' k <- dim(xMat)[2]
+#' b0 <- array(rep(0, k), dim = c(k, 1))
+#' B0 <- 10*diag(k)
+#' n0 <- 5
+#' d0 <- 8
+#' output <- quantregOR2(y = y, x = xMat, b0, B0, n0, d0, gamma2 = 3,
+#' burn = 10, mcmc = 40, p = 0.25, verbose = FALSE)
+#' # output$logMargLike
 #' #   -404.57
 #'
 #' @export
-logMargLikelihoodOR2 <- function(y, x, b0, B0, n0, d0, postMeanbeta, postMeansigma, btildeStore, BtildeStore, gamma, p, verbose) {
+logMargLikeOR2 <- function(y, x, b0, B0, n0, d0, postMeanbeta, postMeansigma, btildeStore, BtildeStore, gamma2, p, verbose) {
     cols <- colnames(x)
     names(x) <- NULL
     names(y) <- NULL
@@ -1393,9 +1399,9 @@ logMargLikelihoodOR2 <- function(y, x, b0, B0, n0, d0, postMeanbeta, postMeansig
     k <- dim(x)[2]
     nsim <- dim(btildeStore)[2]
     burn <- (0.25 * nsim) / (1.25)
-    nu <- 5 * rep(1, n)
+    nu <- array(5 * rep(1,n), dim = c(n, 1))
     ntilde <- n0 + (3 * n)
-    gammacp <- array(c(-Inf, 0, gamma, Inf), dim = c(1, J+1))
+    gammaCp <- array(c(-Inf, 0, gamma2, Inf), dim = c(1, J+1))
     lambda <- 0.5
     theta <- (1 - 2 * p) / (p * (1 - p))
     tau <- sqrt(2 / (p * (1 - p)))
@@ -1419,7 +1425,7 @@ logMargLikelihoodOR2 <- function(y, x, b0, B0, n0, d0, postMeanbeta, postMeansig
 
         nu <- drawnuOR2(z, x, postMeanbeta, sigmaRedrun[i], tau2, theta, lambda)
 
-        z <- drawlatentOR2(y, x, postMeanbeta, sigmaRedrun[i], nu, theta, tau2, gammacp)
+        z <- drawlatentOR2(y, x, postMeanbeta, sigmaRedrun[i], nu, theta, tau2, gammaCp)
         if(verbose) {
             pb$tick()
         }
@@ -1445,10 +1451,10 @@ logMargLikelihoodOR2 <- function(y, x, b0, B0, n0, d0, postMeanbeta, postMeansig
     priorContbeta <- mvnpdf(matrix(postMeanbeta), mean = b0, varcovM = B0, Log = FALSE)
     priorContsigma <- dinvgamma(postMeansigma, shape = (n0 / 2), scale = (2 / d0))
 
-    logLikeCont <- -1 * qrnegLogLikeOR2(y, x, gammacp, postMeanbeta, postMeansigma, p)
+    logLikeCont <- -1 * qrnegLogLikeOR2(y, x, gammaCp, postMeanbeta, postMeansigma, p)
     logPriorCont <- log(priorContbeta*priorContsigma)
     logPosteriorCont <- log(postOrdbeta*postOrdsigma)
 
-    logMargLikelihood <- logLikeCont + logPriorCont - logPosteriorCont
-    return(logMargLikelihood)
+    logMargLike <- logLikeCont + logPriorCont - logPosteriorCont
+    return(logMargLike)
 }

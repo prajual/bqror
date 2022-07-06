@@ -2,19 +2,18 @@
 % Please edit documentation in R/ORII.R
 \name{drawnuOR2}
 \alias{drawnuOR2}
-\title{Samples the scale factor \eqn{\nu} for ordinal quantile model
-with 3 outcomes}
+\title{Samples scale factor \eqn{\nu} for OR2 model}
 \usage{
 drawnuOR2(z, x, beta, sigma, tau2, theta, lambda)
 }
 \arguments{
-\item{z}{Gibbs draw of latent response variable, a column vector.}
+\item{z}{Gibbs draw of continuous latent values, a column vector.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones.}
 
-\item{beta}{Gibbs draw of coefficients of dimension \eqn{(k x 1)}.}
+\item{beta}{Gibbs draw of \eqn{\beta}, a column vector of size \eqn{(k x 1)}.}
 
-\item{sigma}{scale factor, a scalar.}
+\item{sigma}{\eqn{\sigma}, a scalar value.}
 
 \item{tau2}{2/(p(1-p)).}
 
@@ -23,15 +22,14 @@ drawnuOR2(z, x, beta, sigma, tau2, theta, lambda)
 \item{lambda}{index parameter of GIG distribution which is equal to 0.5.}
 }
 \value{
-Returns a row vector of the \eqn{\nu}
-from GIG distribution.
+column vector of \eqn{\nu} from a GIG distribution.
 }
 \description{
-This function samples the \eqn{\nu} from a generalized inverse Gaussian (GIG)
-distribution for ordinal quantile model with 3 outcomes.
+This function samples \eqn{\nu} from a generalized inverse Gaussian (GIG)
+distribution for OR2 model (ordinal quantile model with exactly 3 outcomes).
 }
 \details{
-Function samples the \eqn{\nu} from a GIG
+This function samples \eqn{\nu} from a GIG
 distribution.
 }
 \examples{

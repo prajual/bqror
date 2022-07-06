@@ -2,23 +2,22 @@
 % Please edit documentation in R/ORI.R
 \name{drawdeltaOR1}
 \alias{drawdeltaOR1}
-\title{Samples \eqn{\delta} for ordinal quantile model
-with more than 3 outcomes}
+\title{Samples \eqn{\delta} for OR1 model}
 \usage{
 drawdeltaOR1(y, x, beta, delta0, d0, D0, tune, Dhat, p)
 }
 \arguments{
-\item{y}{observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.}
+\item{y}{observed ordinal outcomes, column vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{beta}{Gibbs draw of coefficients of dimension \eqn{(k x 1)}.}
+\item{beta}{Gibbs draw of \eqn{\beta}, column vector of size \eqn{(k x 1)}.}
 
 \item{delta0}{initial value for \eqn{\delta}.}
 
-\item{d0}{prior mean of normal distribution.}
+\item{d0}{prior mean for \eqn{\delta}.}
 
-\item{D0}{prior variance for normal distribution to sample \eqn{\delta}.}
+\item{D0}{prior covariance matrix for \eqn{\delta}.}
 
 \item{tune}{tuning parameter to adjust MH acceptance rate.}
 
@@ -29,14 +28,14 @@ drawdeltaOR1(y, x, beta, delta0, d0, D0, tune, Dhat, p)
 \value{
 Returns a list with components
 \itemize{
- \item{\code{deltaReturn}: }{vector with \eqn{\delta} values using MH algorithm.}
+ \item{\code{deltaReturn}: }{\eqn{\delta} values from MH algorithm, a row vector.}
   \item{\code{accept}: }{indicator for acceptance of proposed value of \eqn{\delta}.}
 }
 }
 \description{
-This function samples the \eqn{\delta} using a
-random-walk Metropolis-Hastings algorithm for ordinal
-quantile model with more than 3 outcomes.
+This function samples the cut-point vector \eqn{\delta} using a
+random-walk Metropolis-Hastings algorithm for OR1 model (ordinal
+quantile model with 3 or more outcomes).
 }
 \details{
 Samples the \eqn{\delta} using a random-walk Metropolis-Hastings algorithm.
@@ -44,8 +43,8 @@ Samples the \eqn{\delta} using a random-walk Metropolis-Hastings algorithm.
 \examples{
 set.seed(101)
 data("data25j4")
-x <- data25j4$x
 y <- data25j4$y
+xMat <- data25j4$x
 p <- 0.25
 beta <- c(0.3990094, 0.8168991, 2.8034963)
 delta0 <- c(-0.9026915, -2.2488833)
@@ -57,7 +56,7 @@ tune <- 0.1
 Dhat <- matrix(c(0.046612180, -0.001954257, -0.001954257, 0.083066204),
              nrow = 2, ncol = 2, byrow = TRUE)
 p <- 0.25
-output <- drawdeltaOR1(y, x, beta, delta0, d0, D0, tune, Dhat, p)
+output <- drawdeltaOR1(y, xMat, beta, delta0, d0, D0, tune, Dhat, p)
 
 # deltareturn
 #   -0.9025802 -2.229514

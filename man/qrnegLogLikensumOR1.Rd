@@ -2,45 +2,49 @@
 % Please edit documentation in R/ORI.R
 \name{qrnegLogLikensumOR1}
 \alias{qrnegLogLikensumOR1}
-\title{Negative log-likelihood for ordinal quantile model with more than 3 outcomes}
+\title{Negative log-likelihood for OR1 model}
 \usage{
-qrnegLogLikensumOR1(deltaIn, y, x, beta, p)
+qrnegLogLikensumOR1(y, x, betaOne, deltaOne, p)
 }
 \arguments{
-\item{deltaIn}{initialization of cut-points.}
+\item{y}{observed ordinal outcomes, column vector of size \eqn{(n x 1)}.}
 
-\item{y}{observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones.}
+\item{betaOne}{a sample draw of \eqn{\beta} of size \eqn{(k x 1)}.}
 
-\item{beta}{column vector of coefficients of dimension \eqn{(k x 1)}.}
+\item{deltaOne}{a sample draw of \eqn{\delta}.}
 
 \item{p}{quantile level or skewness parameter, p in (0,1).}
 }
 \value{
 Returns a list with components
 \itemize{
-\item{\code{nlogl}: }{vector with likelihood values.}
-\item{\code{negsumlogl}: }{scalar with value of negative log-likelihood.}
+\item{\code{nlogl}: }{vector of negative log-likelihood values.}
+\item{\code{negsumlogl}: }{negative sum of log-likelihood.}
 }
 }
 \description{
-Function for calculating the negative log-likelihood for ordinal quantile model with
-more than 3 outcomes.
+This function computes the negative of log-likelihood for each individual and
+negative sum of log-likelihood for OR1 model.
 }
 \details{
-Computes the negative of the log-likelihood function for
-ordinal quantile regression model with more than 3 outcomes.
+This function computes the negative of log-likelihood for each individual and
+negative sum of log-likelihood for OR1 model.
+
+The latter when evaluated at postMeanbeta and postMeandelta is used to calculate the DIC
+and may also be utilized to calculate the Akaike information criterion (AIC) and Bayesian information
+criterion (BIC).
 }
 \examples{
 set.seed(101)
-deltaIn <- c(-0.002570995, 1.044481071)
+deltaOne <- c(-0.002570995, 1.044481071)
 data("data25j4")
-x <- data25j4$x
 y <- data25j4$y
+xMat <- data25j4$x
 p <- 0.25
-beta <- c(0.3990094, 0.8168991, 2.8034963)
-output <- qrnegLogLikensumOR1(deltaIn, y, x, beta, p)
+betaOne <- c(0.3990094, 0.8168991, 2.8034963)
+output <- qrnegLogLikensumOR1(y, xMat, betaOne, deltaOne, p)
 
 # nlogl
 #   0.7424858

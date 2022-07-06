@@ -2,29 +2,30 @@
 % Please edit documentation in R/ORII.R
 \name{covEffectOR2}
 \alias{covEffectOR2}
-\title{Covariate effect for Bayesian quantile regression for ordinal quantile model
-with 3 outcomes}
+\title{Covariate effect for OR2 model}
 \usage{
-covEffectOR2(model, y, x, modX, gamma, p)
+covEffectOR2(modelOR2, y, xMat1, xMat2, gamma2, p, verbose)
 }
 \arguments{
-\item{model}{outcome of the ORII (quantregOR2) model.}
+\item{modelOR2}{output from the quantregOR2 function.}
 
-\item{y}{observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.}
+\item{y}{observed ordinal outcomes, column vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.
+\item{xMat1}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
 If the covariate of interest is continuous, then the column for the covariate of interest remains unchanged.
 If it is an indicator variable then replace the column for the covariate of interest with a
 column of zeros.}
 
-\item{modX}{matrix x with suitable modification to an independent variable including a column of ones with
+\item{xMat2}{matrix x with suitable modification to an independent variable including a column of ones with
 or without column names. If the covariate of interest is continuous, then add the incremental change
 to each observation in the column for the covariate of interest. If the covariate is an indicator variable,
 then replace the column for the covariate of interest with a column of ones.}
 
-\item{gamma}{one and only cut-point other than 0.}
+\item{gamma2}{one and only cut-point other than 0.}
 
 \item{p}{quantile level or skewness parameter, p in (0,1).}
+
+\item{verbose}{whether to print the final output and provide additional information or not, default is TRUE.}
 }
 \value{
 Returns a list with components:
@@ -35,26 +36,30 @@ probabilities for each outcome category.}
 }
 \description{
 This function computes the average covariate effect for different
-outcomes of the ORII model at the specified quantiles. The covariate
+outcomes of the OR2 model at a specified quantile. The covariate
 effects are calculated marginally of the parameters and the remaining covariates.
 }
 \details{
 This function computes the average covariate effect for different
-outcomes of the ORII model at the specified quantiles. The covariate
-effects are calculated marginally of the parameters and the remaining covariates. The computation of covariate effects utilizes
-the MCMC outputs from estimation.
+outcomes of the OR2 model at a specified quantile. The covariate
+effects are computed marginally of the parameters and the remaining covariates,
+and utilizes draws from Gibbs sampling.
 }
 \examples{
 set.seed(101)
 data("data25j3")
-x <- data25j3$x
 y <- data25j3$y
-k <- dim(x)[2]
-output <- quantregOR2(y, x, b0 = 0, B0 = 10*diag(k), n0 = 5, d0 = 8, gamma = 3,
-mcmc = 50, p = 0.25, verbose = FALSE)
-modX <- x
-modX[,3] <- modX[,3] + 0.02
-res <- covEffectOR2(output, y, x, modX, gamma = 3, p = 0.25)
+xMat1 <- data25j3$x
+k <- dim(xMat1)[2]
+b0 <- array(rep(0, k), dim = c(k, 1))
+B0 <- 10*diag(k)
+n0 <- 5
+d0 <- 8
+output <- quantregOR2(y, xMat1, b0, B0, n0, d0, gamma2 = 3,
+burn = 10, mcmc = 40, p = 0.25, verbose = FALSE)
+xMat2 <- xMat1
+xMat2[,3] <- xMat2[,3] + 0.02
+res <- covEffectOR2(output, y, xMat1, xMat2, gamma2 = 3, p = 0.25, verbose = TRUE)
 
 # Summary of Covariate Effect:
 

@@ -3,31 +3,26 @@
 \docType{data}
 \name{data50j4}
 \alias{data50j4}
-\title{Data containing 500 observations generated from the quantile
-ordinal model with 4 outcomes and \eqn{p = 0.5} (i.e., 50th quantile)}
+\title{Simulated data from OR1 model for \eqn{p = 0.5} (i.e., 50th quantile)}
 \usage{
 data(data50j4)
 }
 \value{
 Returns a list with components
 \itemize{
-\item{\code{x}: }{a matrix of covariates.}
-\item{\code{y}: }{a matrix of ordinal outcomes.}
+\item{\code{x}: }{a matrix of covariates, including a column of ones.}
+\item{\code{y}: }{a column vector of ordinal outcomes.}
 }
 }
 \description{
-Data containing 500 observations generated from the quantile
-ordinal model with 4 outcomes and \eqn{p = 0.5} (i.e., 50th quantile)
+Simulated data from OR1 model for \eqn{p = 0.5} (i.e., 50th quantile)
 }
 \details{
-This data contains 500 observations generated from the quantile
-ordinal model with more than 3 outcomes at the 50th quantile (i.e., \eqn{p = 0.5}).
-The model specifications for generating the data are as follows: \eqn{\beta = (-4, 5, 6)}, $X ~ Unif(0, 1)$, and
-\eqn{\epsilon} ~ AL(\eqn{0, \sigma = 1, p = 0.5}).
-
-The errors are generated from the asymmetric Laplace distribution
-using the normal exponential mixture formulation. The cut-points \eqn{(0, 2, 4)}
-are used to categorize the continuous values into 4 ordinal outcomes.
+This data contains 500 observations generated from a quantile
+ordinal model with 4 outcomes at the 50th quantile (i.e., \eqn{p = 0.5}).
+The model specifics for generating the data are as follows: \eqn{\beta = (-4, 5, 6)}, X ~ Unif(0, 1), and
+\eqn{\epsilon} ~ AL(\eqn{0, \sigma = 1, p = 0.5}). The cut-points \eqn{(0, 2, 4)} are used to classify the
+continuous values of the dependent variable into 4 categories, which forms the ordinal outcomes.
 }
 \references{
 Kozumi, H., and Kobayashi, G. (2011). “Gibbs Sampling Methods for Bayesian Quantile Regression.”

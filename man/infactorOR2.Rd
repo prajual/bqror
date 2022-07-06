@@ -2,54 +2,62 @@
 % Please edit documentation in R/ORII.R
 \name{infactorOR2}
 \alias{infactorOR2}
-\title{Inefficiency factor for ordinal quantile model
-with 3 outcomes}
+\title{Inefficiency factor for OR2 model}
 \usage{
-infactorOR2(x, beta, sigma, autocorrelationCutoff)
+infactorOR2(x, betadraws, sigmadraws, autocorrelationCutoff, verbose)
 }
 \arguments{
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.
+This input is used to extract column names, if available, and not used in calculation.}
 
-\item{beta}{Gibbs draw of coefficients of dimension \eqn{(k x nsim)}.}
+\item{betadraws}{Gibbs draws of \eqn{\beta} of size \eqn{(k x nsim)}.}
 
-\item{sigma}{Gibbs draw of scale factor.}
+\item{sigmadraws}{Gibbs draws of \eqn{\sigma} of size \eqn{(1 x nsim)}.}
 
-\item{autocorrelationCutoff}{cut-off to identify the number of lags, default is 0.05.}
+\item{autocorrelationCutoff}{cut-off to identify the number of lags and form batches, default is 0.05.}
+
+\item{verbose}{whether to print the final output and provide additional information or not, default is TRUE.}
 }
 \value{
 Returns a list with components
 \itemize{
-\item{\code{inefficiencyBeta}: }{vector with inefficiency factor for each \eqn{\beta}.}
-\item{\code{inefficiencySigma}: }{vector with inefficiency factor for each \eqn{\sigma}.}
+\item{\code{inefficiencyBeta}: }{It is a vector with inefficiency factor for each \eqn{\beta}.}
+\item{\code{inefficiencySigma}: }{It is a vector with inefficiency factor for each \eqn{\sigma}.}
 }
 }
 \description{
 This function calculates the inefficiency factor from the MCMC draws
-of \eqn{(\beta, \sigma)} for ordinal quantile model with 3 outcomes. The
+of \eqn{(\beta, \sigma)} for OR2 model (ordinal quantile model with exactly 3 outcomes). The
 inefficiency factor is calculated using the batch-means method.
 }
 \details{
 Calculates the inefficiency factor of \eqn{(\beta, \sigma)} using the batch-means
-method.
+method based on Gibbs draws. Inefficiency factor can be interpreted as the cost of
+working with correlated draws. A low inefficiency factor indicates better mixing
+and efficient algorithm.
 }
 \examples{
 set.seed(101)
 data("data25j3")
-x <- data25j3$x
 y <- data25j3$y
-k <- dim(x)[2]
-output <- quantregOR2(y = y, x = x, b0 = 0, B0 = 10*diag(k), n0 = 5, d0 = 8, gamma = 3,
-mcmc = 50, p = 0.25, verbose = FALSE)
-beta <- output$beta
-sigma <- output$sigma
+xMat <- data25j3$x
+k <- dim(xMat)[2]
+b0 <- array(rep(0, k), dim = c(k, 1))
+B0 <- 10*diag(k)
+n0 <- 5
+d0 <- 8
+output <- quantregOR2(y = y, x = xMat, b0, B0, n0, d0, gamma2 = 3,
+burn = 10, mcmc = 40, p = 0.25, verbose = FALSE)
+betadraws <- output$betadraws
+sigmadraws <- output$sigmadraws
 
-inefficiency <- infactorOR2(x, beta, sigma, 0.5)
+inefficiency <- infactorOR2(xMat, betadraws, sigmadraws, 0.5, TRUE)
 
 # Summary of Inefficiency Factor:
 #            Inefficiency
-# beta_0       2.0011
-# beta_1       1.6946
-# beta_2       1.4633
+# beta_1       2.0011
+# beta_2       1.6946
+# beta_3       1.4633
 # sigma        2.6590
 
 }

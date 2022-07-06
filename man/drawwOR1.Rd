@@ -2,17 +2,16 @@
 % Please edit documentation in R/ORI.R
 \name{drawwOR1}
 \alias{drawwOR1}
-\title{Samples the latent weight w for ordinal quantile model
-with more than 3 outcomes}
+\title{Samples latent weight w for OR1 model}
 \usage{
 drawwOR1(z, x, beta, tau2, theta, lambda)
 }
 \arguments{
-\item{z}{Gibbs draw of latent response variable, a column vector.}
+\item{z}{continuous latent values, vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{beta}{Gibbs draw of coefficients of dimension \eqn{(k x 1)}.}
+\item{beta}{Gibbs draw of \eqn{\beta}, a column vector of size \eqn{(k x 1)}.}
 
 \item{tau2}{2/(p(1-p)).}
 
@@ -24,12 +23,12 @@ drawwOR1(z, x, beta, tau2, theta, lambda)
 column vector of w from a GIG distribution.
 }
 \description{
-This function samples the latent weight w from a generalized
-inverse-Gaussian distribution (GIG) for ordinal quantile model with more
-than 3 outcomes.
+This function samples latent weight w from a generalized
+inverse-Gaussian distribution (GIG) for OR1 model (ordinal quantile model with 3 or more
+outcomes).
 }
 \details{
-Function samples a vector of the latent weight w from a GIG distribution.
+This function samples a vector of latent weight w from a GIG distribution.
 }
 \examples{
 set.seed(101)

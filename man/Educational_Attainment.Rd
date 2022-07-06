@@ -3,8 +3,7 @@
 \docType{data}
 \name{Educational_Attainment}
 \alias{Educational_Attainment}
-\title{The data consists of information on educational attainment and
-other variables for 3,923 individuals and is taken from the National
+\title{Educational Attainment study based on data from the National
 Longitudinal Study of Youth (NLSY, 1979) survey.}
 \usage{
 data(Educational_Attainment)
@@ -12,35 +11,35 @@ data(Educational_Attainment)
 \value{
 Returns data with components
 \itemize{
-\item{\code{mother_work}: }{Indicator for working female at age of 14.}
-\item{\code{urban}: }{Indicator for the youth living in urban are at age of 14.}
-\item{\code{south}: }{Indicator for the youth living in South at age of 14.}
-\item{\code{father_educ}: }{Years of individual's father education.}
-\item{\code{mother_educ}: }{Years of individual's mother education.}
+\item{\code{mother_work}: }{Indicator for working female at the age of 14.}
+\item{\code{urban}: }{Indicator for the youth living in urban area at the age of 14.}
+\item{\code{south}: }{Indicator for the youth living in South at the age of 14.}
+\item{\code{father_educ}: }{Number of years of father's education.}
+\item{\code{mother_educ}: }{Number of years of mother's education.}
 \item{\code{fam_income}: }{Family income of the household in $1000.}
 \item{\code{female}: }{Indicator for individual's gender.}
 \item{\code{black}: }{Indicator for black race.}
-\item{\code{age_cohort_2}: }{Indicator for age of 15.}
-\item{\code{age_cohort_3}: }{Indicator for age of 16.}
-\item{\code{age_cohort_4}: }{Indicator for age of 17.}
-\item{\code{dep_edu_level}: }{matrix of ordinal outcomes.}
+\item{\code{age_cohort_2}: }{Indicator variable for age 15.}
+\item{\code{age_cohort_3}: }{Indicator variable for age 16.}
+\item{\code{age_cohort_4}: }{Indicator variable for age 17.}
+\item{\code{dep_edu_level}: }{Four categories of educational attainment: less than high school, high school degree,
+some college or associate's degree, and college or graduate degree.}
 }
 }
 \description{
-The data consists of information on educational attainment and
-other variables for 3,923 individuals and is taken from the National
+Educational Attainment study based on data from the National
 Longitudinal Study of Youth (NLSY, 1979) survey.
 }
 \details{
-The data is taken from the National Longitudinal Study of Youth (NLSY, 1979)
+This data is taken from the National Longitudinal Study of Youth (NLSY, 1979)
 survey and corresponds to 3,923 individuals. The objective is to study the
-effect of family background, individual and school level variable on the
+effect of family background, individual, and school level variables on the
 quantiles of educational attainment. The dependent variable i.e. the educational
 degree, has four categories given as less than high school, high school degree,
-some college or associate's degree and college or graduate degree. The independent
+some college or associate's degree, and college or graduate degree. The independent
 variables include intercept, square root of family income, mother's education,
 father's education, mother's working status, gender, race, and whether the youth
-lived in an urban area at the age o, and indicator variables to control for age-cohort
+lived in an urban area at the age of 14, and indicator variables to control for age-cohort
 effects.
 }
 \references{

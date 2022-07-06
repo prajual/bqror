@@ -2,81 +2,86 @@
 % Please edit documentation in R/ORII.R
 \name{quantregOR2}
 \alias{quantregOR2}
-\title{Bayesian quantile regression for ordinal quantile model
-with 3 outcomes}
+\title{Bayesian quantile regression for OR2 model}
 \usage{
-quantregOR2(y, x, b0, B0 , n0, d0, gamma, mcmc, p, verbose)
+quantregOR2(y, x, b0, B0 , n0, d0, gamma2, burn, mcmc, p, verbose)
 }
 \arguments{
-\item{y}{observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.}
+\item{y}{observed ordinal outcomes, column vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones with or without column names.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{b0}{prior mean for normal distribution to sample \eqn{\beta}, default is 0.}
+\item{b0}{prior mean for \eqn{\beta}.}
 
-\item{B0}{prior variance for normal distribution to sample \eqn{\beta}}
+\item{B0}{prior covariance matrix for \eqn{\beta}.}
 
-\item{n0}{prior for shape parameter to sample \eqn{\sigma} from inverse gamma distribution, default is 5.}
+\item{n0}{prior shape parameter of inverse-gamma distribution for \eqn{\sigma}, default is 5.}
 
-\item{d0}{prior for scale parameter to sample \eqn{\sigma} from inverse gamma distribution, default is 8.}
+\item{d0}{prior scale parameter of inverse-gamma distribution for \eqn{\sigma}, default is 8.}
 
-\item{gamma}{one and only cut-point other than 0, default is 3.}
+\item{gamma2}{one and only cut-point other than 0, default is 3.}
 
-\item{mcmc}{number of MCMC iterations, post burn-in, default is 15000.}
+\item{burn}{number of burn-in MCMC iterations.}
+
+\item{mcmc}{number of MCMC iterations, post burn-in.}
 
 \item{p}{quantile level or skewness parameter, p in (0,1).}
 
 \item{verbose}{whether to print the final output and provide additional information or not, default is TRUE.}
 }
 \value{
-Returns a list with components
+Returns a bqrorOR2 object with components
 \itemize{
 \item{\code{summary}: }{summary of the MCMC draws.}
-\item{\code{postMeanbeta}: }{vector with mean of sampled
- \eqn{\beta} for each covariate.}
-\item{\code{postMeansigma}: }{vector with mean of sampled
- \eqn{\sigma}.}
-\item{\code{postStdbeta}: }{vector with standard deviation
- of sampled \eqn{\beta} for each covariate.}
- \item{\code{postStdsigma}: }{vector with standard deviation
- of sampled \eqn{\sigma}.}
- \item{\code{allQuantDIC}: }{results of the DIC criteria.}
- \item{\code{logMargLikelihood}: }{scalar value for log marginal likelihood.}
- \item{\code{beta}: }{matrix with all sampled values for \eqn{\beta}.}
- \item{\code{sigma}: }{matrix with all sampled values for \eqn{\sigma}.}
+\item{\code{postMeanbeta}: }{posterior mean of \eqn{\beta} from the complete Gibbs run.}
+\item{\code{postMeansigma}: }{posterior mean of \eqn{\sigma} from the complete Gibbs run.}
+\item{\code{postStdbeta}: }{posterior standard deviation of \eqn{\beta} from the complete Gibbs run.}
+ \item{\code{postStdsigma}: }{posterior standard deviation of \eqn{\sigma} from the complete Gibbs run.}
+ \item{\code{allQuantDIC}: }{All quantities of DIC.}
+ \item{\code{logMargLikelihood}: }{An estimate of log marginal likelihood.}
+ \item{\code{betadraws}: }{\eqn{\beta} draws from the complete Gibbs run, size is \eqn{(k x nsim)}.}
+ \item{\code{sigmadraws}: }{\eqn{\sigma} draws from the complete Gibbs run, size is \eqn{(1 x nsim)}.}
 }
 }
 \description{
-This function estimates Bayesian quantile regression for ordinal quantile model with
-3 outcomes and reports the posterior mean, posterior standard deviation, and 95
-percent posterior credible intervals of \eqn{(\beta, \sigma)}.
+This function estimates Bayesian quantile regression for OR2 model (ordinal quantile model with
+exactly 3 outcomes) and reports the posterior mean, posterior standard deviation, and 95
+percent posterior credible intervals of \eqn{(\beta, \sigma)}. The output also displays the log of
+marginal likelihood and DIC.
 }
 \details{
-Function implements the Bayesian quantile regression for
-ordinal quantile model with 3 outcomes using a Gibbs sampling
-procedure.
+This function estimates Bayesian quantile regression for
+OR2 model using a Gibbs sampling procedure. The function takes the prior distributions
+and other information as inputs and then iteratively samples \eqn{\beta}, \eqn{\sigma},
+latent weight nu, and latent variable z from their respective
+conditional distributions.
 
-Function initializes prior and then iteratively
-samples \eqn{\beta}, \eqn{\sigma} and latent variable z.
-Burn-in is taken as \eqn{0.25*mcmc} and \eqn{nsim = burn}-\eqn{in + mcmc}.
+The function also provides the logarithm of marginal likelihood and the DIC. These
+quantities can be utilized to compare two or more competing models at the same quantile.
+The model with a higher (lower) log marginal likelihood (DIC) provides a
+better model fit.
 }
 \examples{
 set.seed(101)
 data("data25j3")
-x <- data25j3$x
 y <- data25j3$y
-k <- dim(x)[2]
-output <- quantregOR2(y = y, x = x, b0 = 0, B0 = 10*diag(k), n0 = 5, d0 = 8, gamma = 3,
-mcmc = 50, p = 0.25, verbose = TRUE)
+xMat <- data25j3$x
+k <- dim(xMat)[2]
+b0 <- array(rep(0, k), dim = c(k, 1))
+B0 <- 10*diag(k)
+n0 <- 5
+d0 <- 8
+output <- quantregOR2(y = y, x = xMat, b0, B0, n0, d0, gamma2 = 3,
+burn = 10, mcmc = 40, p = 0.25, verbose = TRUE)
 
-# Number of burn-in draws : 12.5
-# Number of retained draws : 50
+# Number of burn-in draws : 10
+# Number of retained draws : 40
 # Summary of MCMC draws :
 
 #            Post Mean Post Std Upper Credible Lower Credible
-#    beta_0   -4.5185   0.9837        -3.1726        -6.2000
-#    beta_1    6.1825   0.9166         7.6179         4.8619
-#    beta_2    5.2984   0.9653         6.9954         4.1619
+#    beta_1   -4.5185   0.9837        -3.1726        -6.2000
+#    beta_2    6.1825   0.9166         7.6179         4.8619
+#    beta_3    5.2984   0.9653         6.9954         4.1619
 #    sigma     1.0879   0.2073         1.5670         0.8436
 
 # Log of Marginal Likelihood: -404.57

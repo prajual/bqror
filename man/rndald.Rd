@@ -2,27 +2,27 @@
 % Please edit documentation in R/ORII.R
 \name{rndald}
 \alias{rndald}
-\title{Generates random numbers from an asymmetric Laplace distribution}
+\title{Generates random numbers from an AL distribution}
 \usage{
 rndald(sigma, p, n)
 }
 \arguments{
-\item{sigma}{scale factor, a scalar.}
+\item{sigma}{scale factor, a scalar value.}
 
 \item{p}{quantile or skewness parameter, p in (0,1).}
 
 \item{n}{number of observations}
 }
 \value{
-Returns a vector \eqn{(n x 1)} of random numbers using an AL(0, \eqn{\sigma}, p)
+Returns a vector \eqn{(n x 1)} of random numbers from an AL(0, \eqn{\sigma}, p)
 }
 \description{
-This function generates a vector of random numbers from an asymmetric
-Laplace distribution with quantile p.
+This function generates a vector of random numbers from an AL
+distribution at quantile p.
 }
 \details{
-Generates a vector of random numbers from an asymmetric Laplace distribution,
-as a mixture of normal–exponential distributions.
+Generates a vector of random numbers from an AL distribution
+as a mixture of normal–exponential distribution.
 }
 \examples{
 set.seed(101)

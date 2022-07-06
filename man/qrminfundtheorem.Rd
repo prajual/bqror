@@ -2,18 +2,18 @@
 % Please edit documentation in R/ORI.R
 \name{qrminfundtheorem}
 \alias{qrminfundtheorem}
-\title{Minimize the negative of log-likelihood}
+\title{Minimizes the negative of log-likelihood for OR1 model}
 \usage{
 qrminfundtheorem(deltaIn, y, x, beta, cri0, cri1, stepsize, maxiter, h, dh, sw, p)
 }
 \arguments{
 \item{deltaIn}{initialization of cut-points.}
 
-\item{y}{observed ordinal outcomes, column vector of dimension \eqn{(n x 1)}.}
+\item{y}{observed ordinal outcomes, column vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{beta}{column vector of coefficients of dimension \eqn{(k x 1)}.}
+\item{beta}{\eqn{\beta}, a column vector of size \eqn{(k x 1)}.}
 
 \item{cri0}{initial criterion, \eqn{cri0 = 1}.}
 
@@ -23,7 +23,7 @@ qrminfundtheorem(deltaIn, y, x, beta, cri0, cri1, stepsize, maxiter, h, dh, sw, 
 
 \item{maxiter}{maximum number of iteration.}
 
-\item{h}{change in value of each \eqn{\delta}, holding other \eqn{\delta}
+\item{h}{change in each value of \eqn{\delta}, holding other \eqn{\delta}
 constant for first derivatives.}
 
 \item{dh}{change in each value of \eqn{\delta}, holding other \eqn{\delta} constant
@@ -36,17 +36,17 @@ for second derivaties.}
 \value{
 Returns a list with components
 \itemize{
-\item{\code{deltamin}: }{vector with cutpoints that minimize the log-likelihood function.}
-\item{\code{negsum}: }{scalar with sum of log-likelihood values.}
-\item{\code{logl}: }{vector with log-likelihood values.}
+\item{\code{deltamin}: }{cutpoint vector that minimizes the log-likelihood function.}
+\item{\code{negsum}: }{negative sum of log-likelihood.}
+\item{\code{logl}: }{log-likelihood values.}
 \item{\code{G}: }{gradient vector, \eqn{(n x k)} matrix with i-th row as the score
 for the i-th unit.}
-\item{\code{H}: }{represents Hessian matrix.}
+\item{\code{H}: }{Hessian matrix.}
 }
 }
 \description{
-This function minimizes the negative of the log-likelihood for
-ordinal quantile model with respect to cut-points \eqn{\delta} using the
+This function minimizes the negative of log-likelihood for OR1 model
+with respect to cut-points \eqn{\delta} using the
 fundamental theorem of calculus.
 }
 \details{
@@ -70,8 +70,8 @@ f(x-dh,y-dh))/2dh}]/2dh}
 set.seed(101)
 deltaIn <- c(-0.002570995,  1.044481071)
 data("data25j4")
-x <- data25j4$x
 y <- data25j4$y
+xMat <- data25j4$x
 p <- 0.25
 beta <- c(0.3990094, 0.8168991, 2.8034963)
 cri0     <- 1
@@ -81,7 +81,7 @@ maxiter  <- 10
 h        <- 0.002
 dh       <- 0.0002
 sw       <- 20
-output <- qrminfundtheorem(deltaIn, y, x, beta, cri0, cri1, stepsize, maxiter, h, dh, sw, p)
+output <- qrminfundtheorem(deltaIn, y, xMat, beta, cri0, cri1, stepsize, maxiter, h, dh, sw, p)
 
 # deltamin
 #   0.8266967 0.3635708

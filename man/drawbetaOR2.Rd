@@ -2,19 +2,18 @@
 % Please edit documentation in R/ORII.R
 \name{drawbetaOR2}
 \alias{drawbetaOR2}
-\title{Samples \eqn{\beta} for ordinal quantile model
-with 3 outcomes}
+\title{Samples \eqn{\beta} for model OR2}
 \usage{
 drawbetaOR2(z, x, sigma, nu, tau2, theta, invB0, invB0b0)
 }
 \arguments{
-\item{z}{dependent variable i.e. ordinal outcome values.}
+\item{z}{continuous latent values, vector of size \eqn{(n x 1)}.}
 
-\item{x}{covariate matrix of dimension \eqn{(n x k)} including a column of ones.}
+\item{x}{covariate matrix of size \eqn{(n x k)} including a column of ones with or without column names.}
 
-\item{sigma}{scale factor, a scalar value.}
+\item{sigma}{\eqn{\sigma}, a scalar value.}
 
-\item{nu}{modified scale factor, row vector.}
+\item{nu}{modified latent weight, column vector of size \eqn{(n x 1)}.}
 
 \item{tau2}{2/(p(1-p)).}
 
@@ -28,20 +27,20 @@ drawbetaOR2(z, x, sigma, nu, tau2, theta, invB0, invB0b0)
 Returns a list with components
 \itemize{
 \item{\code{beta}: }{column vector of \eqn{\beta}
-from a multivariate normal distribution.}
-\item{\code{Btilde}: }{variance parameter for the normal
- distribution.}
+from the posterior multivariate normal distribution.}
+\item{\code{Btilde}: }{variance parameter for the posterior
+multivariate normal distribution.}
 \item{\code{btilde}: }{mean parameter for the
-normal distribution.}
+posterior multivariate normal distribution.}
 }
 }
 \description{
 This function samples \eqn{\beta} from its conditional
-posterior distribution for ordinal quantile model with 3
-outcomes i.e. ORII model.
+posterior distribution for OR2 model (ordinal quantile model with exactly 3
+outcomes).
 }
 \details{
-Function samples a vector of \eqn{\beta} from a multivariate normal distribution.
+This function samples a vector of \eqn{\beta} from posterior multivariate normal distribution.
 }
 \examples{
 set.seed(101)
@@ -60,7 +59,8 @@ x <- matrix(c(
      1, -1.1372480, 1.7537353),
      nrow = 10, ncol = 3, byrow = TRUE)
 sigma <- 1.809417
-nu <- c(5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
+n <- dim(x)[1]
+nu <- array(5 * rep(1,n), dim = c(n, 1))
 tau2 <- 10.6667
 theta <- 2.6667
 invB0 <- matrix(c(

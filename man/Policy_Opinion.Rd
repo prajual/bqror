@@ -3,9 +3,9 @@
 \docType{data}
 \name{Policy_Opinion}
 \alias{Policy_Opinion}
-\title{The data consists of public opinion on raising federal income taxes on
-the rich and a host of other variables for 1,164 individuals and is taken from
-the 2010-2012 American National Election Studies (ANES) on the Evaluation of
+\title{Data contains public opinion on the proposal to raise federal income taxes for couples (individuals)
+earning more than $250,000 ($200,000) per year and a host of other covariates. The data is taken
+from the 2010-2012 American National Election Studies (ANES) on the Evaluation of
 Government and Society Study I (EGSS 1)}
 \usage{
 data(Policy_Opinion)
@@ -13,21 +13,22 @@ data(Policy_Opinion)
 \value{
 Returns data with components
 \itemize{
-\item{\code{Intercept}: }{column of ones.}
-\item{\code{AgeCat}: }{Indicator for age Category.}
+\item{\code{Intercept}: }{Column of ones.}
+\item{\code{AgeCat}: }{Indicator for age category.}
 \item{\code{IncomeCat}: }{Indicator for household income > $75,000.}
-\item{\code{Bachelors}: }{Individual's highest degree in Bachelors.}
-\item{\code{Post.Bachelors}: }{Indicator for highest degree in Masters, Professional or Doctorate.}
-\item{\code{numComputers}: }{Indicator for computer ownership by individual or household.}
+\item{\code{Bachelors}: }{Individual's highest degree is Bachelors.}
+\item{\code{Post.Bachelors}: }{Indicator for highest degree is Masters, Professional or Doctorate.}
+\item{\code{Computers}: }{Indicator for computer ownership by individual or household.}
 \item{\code{CellPhone}: }{Indicator for cellphone ownership by individual or household.}
-\item{\code{White}: }{Indicator for white race.}
-\item{\code{y}: }{matrix of ordinal outcomes.}
+\item{\code{White}: }{Indicator for White race.}
+\item{\code{y}: }{Public opinion on the proposal to raise federal income taxes. The three categories are: oppose, neither
+favor nor oppose, or favor the tax increase.}
 }
 }
 \description{
-The data consists of public opinion on raising federal income taxes on
-the rich and a host of other variables for 1,164 individuals and is taken from
-the 2010-2012 American National Election Studies (ANES) on the Evaluation of
+Data contains public opinion on the proposal to raise federal income taxes for couples (individuals)
+earning more than $250,000 ($200,000) per year and a host of other covariates. The data is taken
+from the 2010-2012 American National Election Studies (ANES) on the Evaluation of
 Government and Society Study I (EGSS 1)
 }
 \details{
@@ -35,7 +36,7 @@ The data consists of 1,164 observations taken from the 2010-2012 American Nation
 Studies (ANES) on the Evaluations of Government and Society Study 1 (EGSS 1). The objective
 is to analyze public opinion on the proposal to raise federal income taxes for couples (individuals)
 earning more than $250,000 ($200,000) per year. The responses were recorded as oppose, neither
-favor nor oppose, or favor the tax increase and forms the dependent variable in the study. The
+favor nor oppose, or favor the tax increase, and forms the dependent variable in the study. The
 independent variables include indicator variables (or dummy) for employment, income above
 $75,000, bachelor's and post-bachelor's degree, computer ownership, cellphone ownership, and white race.
 }
